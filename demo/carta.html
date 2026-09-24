@@ -1,0 +1,162 @@
+
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1513">
+<title>Carta · BAR BOX</title>
+<link rel="icon" href="static/crest.svg" type="image/svg+xml">
+<link rel="stylesheet" href="static/barbox.css">
+
+</head>
+<body><div style="position:sticky;top:0;z-index:99;background:#1d2a26;color:#f3e7c6;font:600 13px system-ui,sans-serif;padding:10px 16px;text-align:center">Vista previa con datos ficticios · los botones no guardan nada · <a href="../index.html" style="color:#f3d58a">volver a la presentación</a></div>
+<div class="envoltura">
+
+  <div class="hud">
+    <a class="volver" href="mapa.html">‹ Mapa</a>
+    <h1>CARTA</h1>
+    <span class="crece"></span>
+    <span class="fecha">5 productos</span>
+  </div>
+
+  
+
+  
+<section class="panel">
+  <h2>Añadir a la carta</h2>
+  <p class="pie">Puedes crearlo con su primer ingrediente o sin ninguno. La receta completa
+     —un coctel con ron, jugo y hielo— se arma después en la ficha del producto.</p>
+  <form>
+    
+    <div class="fila">
+      <div>
+        <label for="name">Nombre en la carta</label>
+        <input id="name" name="name" maxlength="120" required placeholder="Café americano">
+      </div>
+      <div>
+        <label for="price">Precio de venta</label>
+        <input data-dinero id="price" name="price" inputmode="decimal" required placeholder="4.500" autocomplete="off">
+      </div>
+    </div>
+    <div class="fila">
+      <div>
+        <label for="product_id">Primer ingrediente (opcional)</label>
+        <select id="product_id" name="product_id">
+          <option value="">— no descuenta nada —</option>
+          <option value="3">Aguardiente (trago) (unidad)</option><option value="1">Club Colombia (unidad)</option><option value="2">Corona (unidad)</option><option value="4">Limonada de coco (unidad)</option><option value="5">Papas criollas (unidad)</option>
+        </select>
+      </div>
+      <div>
+        <label for="use_qty">Cuánto gasta cada venta</label>
+        <input id="use_qty" name="use_qty" inputmode="decimal" value="0" autocomplete="off">
+      </div>
+    </div>
+    <div class="acciones">
+      <button class="boton" type="button">Añadir a la carta</button>
+      <a class="boton suave" href="mapa.html">Cancelar</a>
+    </div>
+  </form>
+  
+</section>
+
+<section class="panel">
+  <h2>Lo que vendes</h2>
+  <p class="pie">Retirar un producto de la carta no borra ventas antiguas: cada renglón guardó su nombre y su precio.</p>
+  <div class="tabla">
+  <table>
+    <tr><th>Producto</th><th>Precio</th><th>Margen</th><th>Receta</th><th>Estado</th><th></th></tr>
+    
+      <tr>
+        <td><a href="#">Aguardiente (trago)</a></td>
+        <td>$ 9.000</td>
+        <td>
+          <span class="etiqueta frio">$ 6.500 · 72 %</span>
+            
+          </td>
+        <td>
+          
+            1 unidad Aguardiente (trago)
+          
+        </td>
+        <td><span class="etiqueta oro">en carta</span></td>
+        <td><a class="boton suave" href="#">Abrir ficha</a></td>
+      </tr>
+    
+      <tr>
+        <td><a href="#">Club Colombia</a></td>
+        <td>$ 8.000</td>
+        <td>
+          <span class="etiqueta frio">$ 4.500 · 56 %</span>
+            
+          </td>
+        <td>
+          
+            1 unidad Club Colombia
+          
+        </td>
+        <td><span class="etiqueta oro">en carta</span></td>
+        <td><a class="boton suave" href="#">Abrir ficha</a></td>
+      </tr>
+    
+      <tr>
+        <td><a href="#">Corona</a></td>
+        <td>$ 12.000</td>
+        <td>
+          <span class="etiqueta frio">$ 6.800 · 57 %</span>
+            
+          </td>
+        <td>
+          
+            1 unidad Corona
+          
+        </td>
+        <td><span class="etiqueta oro">en carta</span></td>
+        <td><a class="boton suave" href="#">Abrir ficha</a></td>
+      </tr>
+    
+      <tr>
+        <td><a href="#">Limonada de coco</a></td>
+        <td>$ 14.000</td>
+        <td>
+          <span class="etiqueta frio">$ 10.000 · 71 %</span>
+            
+          </td>
+        <td>
+          
+            1 unidad Limonada de coco
+          
+        </td>
+        <td><span class="etiqueta oro">en carta</span></td>
+        <td><a class="boton suave" href="#">Abrir ficha</a></td>
+      </tr>
+    
+      <tr>
+        <td><a href="#">Papas criollas</a></td>
+        <td>$ 16.000</td>
+        <td>
+          <span class="etiqueta frio">$ 10.500 · 66 %</span>
+            
+          </td>
+        <td>
+          
+            1 unidad Papas criollas
+          
+        </td>
+        <td><span class="etiqueta oro">en carta</span></td>
+        <td><a class="boton suave" href="#">Abrir ficha</a></td>
+      </tr>
+    
+  </table>
+  </div>
+</section>
+
+
+  <footer>
+    BAR BOX · Ventas · <a href="menu.html">Menú principal</a> ·
+    <a href="carta.html">Carta</a> · <a href="#">Mesas</a> ·
+    <a href="caja.html">Caja</a> · <a href="#">Cierre del día</a> · <a href="#">Estadísticas</a> · <a href="inventario.html">Inventario</a>
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,246 @@
+
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1513">
+<title>1 · BAR BOX</title>
+<link rel="icon" href="static/crest.svg" type="image/svg+xml">
+<link rel="stylesheet" href="static/barbox.css">
+
+</head>
+<body><div style="position:sticky;top:0;z-index:99;background:#1d2a26;color:#f3e7c6;font:600 13px system-ui,sans-serif;padding:10px 16px;text-align:center">Vista previa con datos ficticios · los botones no guardan nada · <a href="../index.html" style="color:#f3d58a">volver a la presentación</a></div>
+<div class="envoltura">
+
+  <div class="hud">
+    <a class="volver" href="mapa.html">‹ Mapa</a>
+    <h1>1</h1>
+    <span class="crece"></span>
+    
+<span class="fecha">Salón · 4 puestos ·
+  Cuenta abierta</span>
+
+  </div>
+
+  
+
+  
+
+
+<div class="dos">
+  
+  <section class="panel" id="carta">
+    <h2>Carta</h2>
+    <p class="pie">Un toque = un servido.</p>
+    
+      <h3>Cervezas</h3>
+      <div class="carta">
+      
+        
+        <form>
+          
+          <input type="hidden" name="revision" value="3">
+          <input type="hidden" name="item_id" value="1">
+          <input type="hidden" name="qty" value="1">
+          <button type="button" >
+            Club Colombia
+            <b>$ 8.000</b>
+            <small class="">quedan para 43</small>
+          </button>
+        </form>
+      
+        
+        <form>
+          
+          <input type="hidden" name="revision" value="3">
+          <input type="hidden" name="item_id" value="2">
+          <input type="hidden" name="qty" value="1">
+          <button type="button" >
+            Corona
+            <b>$ 12.000</b>
+            <small class="">quedan para 22</small>
+          </button>
+        </form>
+      
+      </div>
+    
+      <h3>Licores</h3>
+      <div class="carta">
+      
+        
+        <form>
+          
+          <input type="hidden" name="revision" value="3">
+          <input type="hidden" name="item_id" value="3">
+          <input type="hidden" name="qty" value="1">
+          <button type="button" >
+            Aguardiente (trago)
+            <b>$ 9.000</b>
+            <small class="">quedan para 56</small>
+          </button>
+        </form>
+      
+      </div>
+    
+      <h3>Sin alcohol</h3>
+      <div class="carta">
+      
+        
+        <form>
+          
+          <input type="hidden" name="revision" value="3">
+          <input type="hidden" name="item_id" value="4">
+          <input type="hidden" name="qty" value="1">
+          <button type="button" >
+            Limonada de coco
+            <b>$ 14.000</b>
+            <small class="">quedan para 28</small>
+          </button>
+        </form>
+      
+      </div>
+    
+      <h3>Para picar</h3>
+      <div class="carta">
+      
+        
+        <form>
+          
+          <input type="hidden" name="revision" value="3">
+          <input type="hidden" name="item_id" value="5">
+          <input type="hidden" name="qty" value="1">
+          <button type="button" >
+            Papas criollas
+            <b>$ 16.000</b>
+            <small class="">quedan para 19</small>
+          </button>
+        </form>
+      
+      </div>
+    
+  </section>
+
+
+  <section class="panel" id="cobro">
+    <h2>Pagar · cuenta #1</h2>
+    <div class="total"><span>Total de la cuenta</span><strong>$ 40.000</strong></div>
+
+    <form>
+      
+      <input type="hidden" name="revision" value="3">
+      <label for="payment">Forma de pago</label>
+      <select id="payment" name="payment">
+        <option value="efectivo">Efectivo</option><option value="tarjeta">Tarjeta</option><option value="transferencia">Transferencia</option><option value="cortesía">Cortesía</option>
+      </select>
+      
+      <label class="casilla"><input type="checkbox" name="propina" value="1">
+        Agregar propina sugerida (10 %): $ 4.000</label>
+      <p class="nota">Pregúntale al cliente: la propina es voluntaria. Si la acepta, la cuenta queda en $ 44.000.</p>
+      <div class="acciones">
+        <button class="boton" type="button" >Cobrar $ 40.000</button>
+      </div>
+    </form>
+
+    <div class="acciones">
+      <a class="boton suave" href="precuenta.html">Imprimir pre-cuenta</a>
+      <form>
+        
+        <button class="boton suave" type="button">
+          Marcar: pidió la cuenta
+        </button>
+      </form>
+    </div>
+  </section>
+</div>
+
+<section class="panel" id="detalle">
+  <h2>Lo servido</h2>
+  <p class="pie">Abierta 24/09/2026 13:40 · hora de Colombia</p>
+
+  
+    <div class="renglon">
+      <span class="q">1</span>
+      <span class="txt">
+        <b>Club Colombia</b>
+        <small>$ 8.000 cada uno · 24/09/2026 13:40</small>
+      </span>
+      <span class="val">$ 8.000</span>
+      <form>
+        
+        <input type="hidden" name="revision" value="3">
+        <input type="hidden" name="note" value="Retirado de la cuenta">
+        <button class="boton suave" type="button" aria-label="Quitar Club Colombia">Quitar</button>
+      </form>
+    </div>
+  
+    <div class="renglon">
+      <span class="q">1</span>
+      <span class="txt">
+        <b>Club Colombia</b>
+        <small>$ 8.000 cada uno · 24/09/2026 13:40</small>
+      </span>
+      <span class="val">$ 8.000</span>
+      <form>
+        
+        <input type="hidden" name="revision" value="3">
+        <input type="hidden" name="note" value="Retirado de la cuenta">
+        <button class="boton suave" type="button" aria-label="Quitar Club Colombia">Quitar</button>
+      </form>
+    </div>
+  
+    <div class="renglon">
+      <span class="q">1</span>
+      <span class="txt">
+        <b>Club Colombia</b>
+        <small>$ 8.000 cada uno · 24/09/2026 13:40</small>
+      </span>
+      <span class="val">$ 8.000</span>
+      <form>
+        
+        <input type="hidden" name="revision" value="3">
+        <input type="hidden" name="note" value="Retirado de la cuenta">
+        <button class="boton suave" type="button" aria-label="Quitar Club Colombia">Quitar</button>
+      </form>
+    </div>
+  
+    <div class="renglon">
+      <span class="q">1</span>
+      <span class="txt">
+        <b>Papas criollas</b>
+        <small>$ 16.000 cada uno · 24/09/2026 13:40</small>
+      </span>
+      <span class="val">$ 16.000</span>
+      <form>
+        
+        <input type="hidden" name="revision" value="3">
+        <input type="hidden" name="note" value="Retirado de la cuenta">
+        <button class="boton suave" type="button" aria-label="Quitar Papas criollas">Quitar</button>
+      </form>
+    </div>
+  
+
+  <details>
+    <summary class="nota">Anular la cuenta (devuelve todo al inventario)</summary>
+    <form>
+      
+      <input type="hidden" name="revision" value="3">
+      <label for="note">Motivo (queda escrito en el historial)</label>
+      <input id="note" name="note" maxlength="300" required placeholder="El cliente se fue sin consumir">
+      <div class="acciones"><button class="boton riesgo" type="button">Anular cuenta</button></div>
+    </form>
+  </details>
+</section>
+
+
+
+
+
+  <footer>
+    BAR BOX · Ventas · <a href="menu.html">Menú principal</a> ·
+    <a href="carta.html">Carta</a> · <a href="#">Mesas</a> ·
+    <a href="caja.html">Caja</a> · <a href="#">Cierre del día</a> · <a href="#">Estadísticas</a> · <a href="inventario.html">Inventario</a>
+  </footer>
+</div>
+</body>
+</html>

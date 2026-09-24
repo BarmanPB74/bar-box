@@ -1,0 +1,174 @@
+
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1513">
+<title>Caja · BAR BOX</title>
+<link rel="icon" href="static/crest.svg" type="image/svg+xml">
+<link rel="stylesheet" href="static/barbox.css">
+
+</head>
+<body><div style="position:sticky;top:0;z-index:99;background:#1d2a26;color:#f3e7c6;font:600 13px system-ui,sans-serif;padding:10px 16px;text-align:center">Vista previa con datos ficticios · los botones no guardan nada · <a href="../index.html" style="color:#f3d58a">volver a la presentación</a></div>
+<div class="envoltura">
+
+  <div class="hud">
+    <a class="volver" href="mapa.html">‹ Mapa</a>
+    <h1>CAJA</h1>
+    <span class="crece"></span>
+    
+<span class="fecha">Turno #1 · abrió Demo · 24/09/2026 13:40
+  </span>
+
+  </div>
+
+  
+
+  
+<ol class="pasos" aria-label="Ciclo de caja">
+  
+    <li class="paso hecho">
+      <span class="num">1</span>
+      <span class="txt"><b>Abrir caja</b>
+        <small>hecho</small></span>
+    </li>
+  
+    <li class="paso disponible">
+      <span class="num">2</span>
+      <span class="txt"><b><a href="mapa.html">Vender</a></b>
+        <small>listo</small></span>
+    </li>
+  
+    <li class="paso bloqueado">
+      <span class="num">3</span>
+      <span class="txt"><b>Organizar facturas y gastos</b>
+        <small>Cobra o anula 3 cuentas abiertas antes.</small></span>
+    </li>
+  
+    <li class="paso bloqueado">
+      <span class="num">4</span>
+      <span class="txt"><b>Cerrar caja</b>
+        <small>Cobra o anula 3 cuentas abiertas antes.</small></span>
+    </li>
+  
+</ol>
+
+<div class="dos">
+
+  <section class="panel">
+    <h2>Movimientos de caja</h2>
+    <p class="pie">Pagar el hielo, dejar un cambio, un retiro a media noche. Sin esto, el cuadre
+       miente y un gasto honesto parece un faltante.</p>
+    <form>
+      
+      <div class="fila">
+        <div><label for="kind">Qué pasó</label>
+          <select id="kind" name="kind">
+            <option value="retiro">Salió plata del cajón</option>
+            <option value="ingreso">Entró plata al cajón</option>
+          </select></div>
+        <div><label for="amount">Cuánto</label>
+          <input data-dinero id="amount" name="amount" inputmode="decimal" required autocomplete="off"></div>
+      </div>
+      <label for="mnote">Motivo (queda escrito con tu nombre)</label>
+      <input id="mnote" name="note" maxlength="300" required placeholder="Pagué el hielo al proveedor">
+      <div class="acciones"><button class="boton suave" type="button">Registrar</button></div>
+    </form>
+
+    
+      <div class="tabla">
+      <table>
+        <tr><th>Hora</th><th>Qué</th><th>Motivo</th><th>Monto</th></tr>
+        
+          <tr>
+            <td>24/09/2026 13:40</td>
+            <td><span class="etiqueta alarma">retiro</span></td>
+            <td>Hielo<br><small>Demo</small></td>
+            <td>− $ 18.000</td>
+          </tr>
+        
+      </table>
+      </div>
+    
+  </section>
+
+  <section class="panel">
+    <h2>Cuadre en vivo</h2>
+    <p class="pie">Lo que deberías tener en el cajón ahora mismo, si nadie se equivocó.</p>
+
+    <div class="renglon"><span class="txt"><b>Base</b><small>con lo que abriste</small></span>
+      <span class="val">$ 150.000</span></div>
+    <div class="renglon"><span class="txt"><b>Ventas en efectivo</b><small>1 cuenta cobrada en este turno</small></span>
+      <span class="val">+ $ 0</span></div>
+    <div class="renglon"><span class="txt"><b>Propinas en efectivo</b><small>no son venta: son del equipo</small></span>
+      <span class="val">+ $ 0</span></div>
+    <div class="renglon"><span class="txt"><b>Ingresos de caja</b><small>plata que entró sin ser venta</small></span>
+      <span class="val">+ $ 0</span></div>
+    <div class="renglon"><span class="txt"><b>Retiros de caja</b><small>plata que salió del cajón</small></span>
+      <span class="val">− $ 18.000</span></div>
+
+    <div class="total"><span>Debe haber en el cajón</span><strong>$ 132.000</strong></div>
+
+    
+      <p class="nota">Además cobraste $ 22.000 que <strong>no está en el cajón</strong>
+         (tarjeta, transferencia o cortesía). No entra en la cuenta de arriba.</p>
+    
+    
+      <p class="nota">Propinas por tarjeta o transferencia: $ 2.200.
+         Tampoco están en el cajón. Propinas del turno en total: $ 2.200.</p>
+    
+
+    <h2>Organizar facturas y gastos</h2>
+    <p class="pie">Antes de contar: que cada gasto del turno esté registrado y que sepas qué facturas de proveedor faltan por revisar.</p>
+    <div class="renglon"><span class="txt"><b>Facturas de proveedor</b>
+      <small>ninguna pendiente</small></span>
+      <span class="val"><a href="#">Abrir ↗</a></span></div>
+    <div class="renglon"><span class="txt"><b>Gastos del turno</b>
+      <small>1 retiro, en la lista de movimientos</small></span>
+      <span class="val">− $ 18.000</span></div>
+    
+    
+      <p class="nota">Cobra o anula 3 cuentas abiertas antes.</p>
+    
+
+    <h2>Cerrar el turno</h2>
+    
+      <p class="nota"><span class="etiqueta alarma">3 cuentas abiertas</span>
+         No se puede cerrar la caja así: habría ventas sin turno y el cuadre no significaría nada.
+         <a href="mapa.html">Ve al mapa</a> y cóbralas o anúlalas.</p>
+    
+    
+    <form>
+      
+      <input type="hidden" name="revision" value="5">
+      <label for="counted">Cuenta el efectivo y escribe cuánto hay</label>
+      <input data-dinero id="counted" name="counted" inputmode="decimal" required autocomplete="off"
+             placeholder="Cuenta primero, mira la cifra de arriba después">
+      
+      <label for="note">Nota (opcional)</label>
+      <input id="note" name="note" maxlength="300" 
+             placeholder="Propinas aparte, el billete roto…">
+      <div class="acciones">
+        <button class="boton" type="button" disabled>Ver resumen antes de cerrar</button>
+      </div>
+      <p class="nota">Cobra o anula 3 cuentas abiertas antes.</p>
+    </form>
+    
+    <p class="nota">Cuenta la plata <strong>antes</strong> de mirar el esperado. Si miras primero,
+       tu mano va a encontrar la cifra que quiere encontrar. La diferencia se guarda tal cual:
+       nadie la corrige por ti.</p>
+  </section>
+
+</div>
+
+
+
+  <footer>
+    BAR BOX · Ventas · <a href="menu.html">Menú principal</a> ·
+    <a href="carta.html">Carta</a> · <a href="#">Mesas</a> ·
+    <a href="caja.html">Caja</a> · <a href="#">Cierre del día</a> · <a href="#">Estadísticas</a> · <a href="inventario.html">Inventario</a>
+  </footer>
+</div>
+</body>
+</html>

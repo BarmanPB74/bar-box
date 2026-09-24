@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ECEDEF">
+<title>Inventario · BAR BOX</title>
+<link rel="icon" href="static/crest.svg" type="image/svg+xml">
+<link rel="stylesheet" href="static/barbox.css">
+</head>
+<body><div style="position:sticky;top:0;z-index:99;background:#1d2a26;color:#f3e7c6;font:600 13px system-ui,sans-serif;padding:10px 16px;text-align:center">Vista previa con datos ficticios · los botones no guardan nada · <a href="../index.html" style="color:#f3d58a">volver a la presentación</a></div>
+<header>
+  <a class="brand" href="menu.html"><img src="static/crest.svg" alt="" width="42" height="42"><span>BAR BOX<small>EL OFICIO, BAJO CONTROL</small></span></a>
+  <span class="edition">EDICIÓN LOCAL <b>0.7</b></span>
+</header>
+<div class="layout">
+  <nav aria-label="Capítulos">
+    <p class="eyebrow">LIBRO DE GUARDIA</p>
+    
+    
+    <a class="" href="menu.html"><span>❖</span>Menú principal</a>
+    
+    
+    <a class="" href="caja.html"><span>¤</span>Caja</a>
+    
+    <a class="" href="mapa.html"><span>◆</span>Ventas</a>
+    
+    <a class="" href="#"><span>▤</span>Documentos</a>
+    
+    <a class="active" href="inventario.html"><span>▦</span>Inventario</a>
+    
+    <a class="" href="contabilidad.html"><span>$</span>Contabilidad</a>
+    
+    <a class="" href="#"><span>◈</span>Puesto de mando</a>
+    
+    <a class="" href="#"><span>✎</span>Libro de Guardia</a>
+    
+    <a class="" href="#"><span>↗</span>Movimientos</a>
+    
+    
+    <a class="" href="#"><span>⇲</span>Pedidos</a>
+    <a class="" href="#"><span>☖</span>Usuarios</a>
+    <div class="navfoot">
+      
+      <div class="quien">
+        <span class="dot"></span> Demo · Dueño<br>
+        <a href="#">Cambiar mi clave</a> ·
+        <form><button type="button">Salir</button></form>
+      </div>
+      
+      Edición local · 0.7
+      <p>Una barra preparada.<br>Una guardia tranquila.</p>
+      <p class="region"><a href="#" aria-current="true">Colombia</a> <a href="#" >México</a> <a href="#" >España</a> </p>
+    </div>
+  </nav>
+  <main>
+    
+    <p class="eyebrow">CAPÍTULO II / TUS RECURSOS</p><h1>Inventario</h1><p class="intro">Productos e ingredientes en una sola página. Cuenta, recibe o da de baja desde cada tarjeta.</p>
+<p class="pestanas"><a href="#productos">Productos</a> <a href="#ingredientes">Ingredientes</a> <a href="#">Categorías</a></p>
+
+
+
+<section id="productos" class="seccion"><h2>Productos <small>se venden tal cual o preparados</small></h2>
+<details class="paper" ><summary>＋ Nuevo producto</summary><form><label>Nombre<input name="name" required maxlength="120" placeholder="Club Colombia"></label><label>Precio de venta<input data-dinero name="price" inputmode="decimal" required maxlength="20" placeholder="6.000" autocomplete="off"></label><label>Categoría<select name="category_id"><option value="">Sin categoría</option><option value="1">Cervezas</option><option value="2">Licores</option><option value="3">Sin alcohol</option><option value="4">Para picar</option></select></label><label>…o una nueva<input name="new_category" maxlength="60" placeholder="Cervezas" autocomplete="off"></label>
+<fieldset><legend>Se vende tal cual</legend><label>Costo por unidad<input data-dinero name="cost" inputmode="decimal" maxlength="20" placeholder="2.800" autocomplete="off"></label><label>Existencia (unidades)<input name="stock" type="number" step="1" min="0" max="1000000" placeholder="24"></label><label>Mínimo (activa alerta)<input name="minimum" type="number" step="1" min="0" max="1000000" placeholder="6"></label><label>Proveedor (opcional)<input name="supplier" maxlength="60" placeholder="Distribuidora Norte"></label></fieldset>
+<fieldset><legend>…o se prepara con ingredientes</legend><p class="hint">Aún no hay ingredientes. Créalos abajo, en <a href="#ingredientes">Ingredientes</a> (ron, limón, hielo…).</p></fieldset>
+<div class="formactions"><button type="button">Guardar y poner en la carta</button><a class="button ghost" href="inventario.html">Cancelar</a></div></form></details>
+
+<h2 class="grupo">Cervezas <small>2</small></h2><div class="items"><article class="paper item" id="p1"><div class="sectionhead"><span class="badge good">DISPONIBLE</span><small>#001</small></div><h2>Club Colombia</h2><p class="stock">43 <small>unidad</small></p>
+<p class="hint">Mínimo 6 · Meta 48 · <b>pedir 5 unidad</b></p>
+
+<form><input type="hidden" name="revision" value="6"><label>Movimiento<select name="kind"><option value="conteo">Conteo</option><option value="entrada">Entrada</option><option value="salida">Salida</option><option value="merma">Pérdida</option></select></label><label>Cantidad en unidad<input name="quantity" type="number" min="0" max="1000000" step="0.001" required></label><label>Motivo<input name="note" required maxlength="300" placeholder="Conteo al cierre"></label><button type="button">Registrar</button></form>
+<p class="hint">Conteo = lo que hay de verdad (ajusta y guarda la diferencia). Entrada suma; salida y pérdida restan.</p>
+<details><summary>Ficha · costo $ 3.500/unidad · Proveedor demo</summary><form><input type="hidden" name="revision" value="6"><label>Costo por unidad<input data-dinero name="cost" inputmode="decimal" maxlength="20" value="3.500"></label><label>Categoría<select name="category_id"><option value="">Sin categoría</option><option value="1" selected>Cervezas</option><option value="2" >Licores</option><option value="3" >Sin alcohol</option><option value="4" >Para picar</option></select></label><label>Proveedor<input name="supplier" maxlength="60" value="Proveedor demo"></label><label>Mínimo<input name="minimum" type="number" step="0.001" min="0" max="1000000" required value="6"></label><label>Meta al reponer<input name="target" type="number" step="0.001" min="0" max="1000000" required value="48"></label><div class="formactions"><button type="button">Guardar ficha</button></div><p class="hint">La existencia no se edita aquí: cambia sólo con un movimiento, para que quede su causa.</p></form>
+</details></article><article class="paper item" id="p2"><div class="sectionhead"><span class="badge good">DISPONIBLE</span><small>#002</small></div><h2>Corona</h2><p class="stock">22 <small>unidad</small></p>
+<p class="hint">Mínimo 6 · Meta 24 · <b>pedir 2 unidad</b></p>
+
+<form><input type="hidden" name="revision" value="3"><label>Movimiento<select name="kind"><option value="conteo">Conteo</option><option value="entrada">Entrada</option><option value="salida">Salida</option><option value="merma">Pérdida</option></select></label><label>Cantidad en unidad<input name="quantity" type="number" min="0" max="1000000" step="0.001" required></label><label>Motivo<input name="note" required maxlength="300" placeholder="Conteo al cierre"></label><button type="button">Registrar</button></form>
+<p class="hint">Conteo = lo que hay de verdad (ajusta y guarda la diferencia). Entrada suma; salida y pérdida restan.</p>
+<details><summary>Ficha · costo $ 5.200/unidad · Proveedor demo</summary><form><input type="hidden" name="revision" value="3"><label>Costo por unidad<input data-dinero name="cost" inputmode="decimal" maxlength="20" value="5.200"></label><label>Categoría<select name="category_id"><option value="">Sin categoría</option><option value="1" selected>Cervezas</option><option value="2" >Licores</option><option value="3" >Sin alcohol</option><option value="4" >Para picar</option></select></label><label>Proveedor<input name="supplier" maxlength="60" value="Proveedor demo"></label><label>Mínimo<input name="minimum" type="number" step="0.001" min="0" max="1000000" required value="6"></label><label>Meta al reponer<input name="target" type="number" step="0.001" min="0" max="1000000" required value="24"></label><div class="formactions"><button type="button">Guardar ficha</button></div><p class="hint">La existencia no se edita aquí: cambia sólo con un movimiento, para que quede su causa.</p></form>
+</details></article></div><h2 class="grupo">Licores <small>1</small></h2><div class="items"><article class="paper item" id="p3"><div class="sectionhead"><span class="badge good">DISPONIBLE</span><small>#003</small></div><h2>Aguardiente (trago)</h2><p class="stock">56 <small>unidad</small></p>
+<p class="hint">Mínimo 6 · Meta 60 · <b>pedir 4 unidad</b></p>
+
+<form><input type="hidden" name="revision" value="5"><label>Movimiento<select name="kind"><option value="conteo">Conteo</option><option value="entrada">Entrada</option><option value="salida">Salida</option><option value="merma">Pérdida</option></select></label><label>Cantidad en unidad<input name="quantity" type="number" min="0" max="1000000" step="0.001" required></label><label>Motivo<input name="note" required maxlength="300" placeholder="Conteo al cierre"></label><button type="button">Registrar</button></form>
+<p class="hint">Conteo = lo que hay de verdad (ajusta y guarda la diferencia). Entrada suma; salida y pérdida restan.</p>
+<details><summary>Ficha · costo $ 2.500/unidad · Proveedor demo</summary><form><input type="hidden" name="revision" value="5"><label>Costo por unidad<input data-dinero name="cost" inputmode="decimal" maxlength="20" value="2.500"></label><label>Categoría<select name="category_id"><option value="">Sin categoría</option><option value="1" >Cervezas</option><option value="2" selected>Licores</option><option value="3" >Sin alcohol</option><option value="4" >Para picar</option></select></label><label>Proveedor<input name="supplier" maxlength="60" value="Proveedor demo"></label><label>Mínimo<input name="minimum" type="number" step="0.001" min="0" max="1000000" required value="6"></label><label>Meta al reponer<input name="target" type="number" step="0.001" min="0" max="1000000" required value="60"></label><div class="formactions"><button type="button">Guardar ficha</button></div><p class="hint">La existencia no se edita aquí: cambia sólo con un movimiento, para que quede su causa.</p></form>
+</details></article></div><h2 class="grupo">Sin alcohol <small>1</small></h2><div class="items"><article class="paper item" id="p4"><div class="sectionhead"><span class="badge good">DISPONIBLE</span><small>#004</small></div><h2>Limonada de coco</h2><p class="stock">28 <small>unidad</small></p>
+<p class="hint">Mínimo 6 · Meta 30 · <b>pedir 2 unidad</b></p>
+
+<form><input type="hidden" name="revision" value="3"><label>Movimiento<select name="kind"><option value="conteo">Conteo</option><option value="entrada">Entrada</option><option value="salida">Salida</option><option value="merma">Pérdida</option></select></label><label>Cantidad en unidad<input name="quantity" type="number" min="0" max="1000000" step="0.001" required></label><label>Motivo<input name="note" required maxlength="300" placeholder="Conteo al cierre"></label><button type="button">Registrar</button></form>
+<p class="hint">Conteo = lo que hay de verdad (ajusta y guarda la diferencia). Entrada suma; salida y pérdida restan.</p>
+<details><summary>Ficha · costo $ 4.000/unidad · Proveedor demo</summary><form><input type="hidden" name="revision" value="3"><label>Costo por unidad<input data-dinero name="cost" inputmode="decimal" maxlength="20" value="4.000"></label><label>Categoría<select name="category_id"><option value="">Sin categoría</option><option value="1" >Cervezas</option><option value="2" >Licores</option><option value="3" selected>Sin alcohol</option><option value="4" >Para picar</option></select></label><label>Proveedor<input name="supplier" maxlength="60" value="Proveedor demo"></label><label>Mínimo<input name="minimum" type="number" step="0.001" min="0" max="1000000" required value="6"></label><label>Meta al reponer<input name="target" type="number" step="0.001" min="0" max="1000000" required value="30"></label><div class="formactions"><button type="button">Guardar ficha</button></div><p class="hint">La existencia no se edita aquí: cambia sólo con un movimiento, para que quede su causa.</p></form>
+</details></article></div><h2 class="grupo">Para picar <small>1</small></h2><div class="items"><article class="paper item" id="p5"><div class="sectionhead"><span class="badge good">DISPONIBLE</span><small>#005</small></div><h2>Papas criollas</h2><p class="stock">19 <small>unidad</small></p>
+<p class="hint">Mínimo 6 · Meta 20 · <b>pedir 1 unidad</b></p>
+
+<form><input type="hidden" name="revision" value="2"><label>Movimiento<select name="kind"><option value="conteo">Conteo</option><option value="entrada">Entrada</option><option value="salida">Salida</option><option value="merma">Pérdida</option></select></label><label>Cantidad en unidad<input name="quantity" type="number" min="0" max="1000000" step="0.001" required></label><label>Motivo<input name="note" required maxlength="300" placeholder="Conteo al cierre"></label><button type="button">Registrar</button></form>
+<p class="hint">Conteo = lo que hay de verdad (ajusta y guarda la diferencia). Entrada suma; salida y pérdida restan.</p>
+<details><summary>Ficha · costo $ 5.500/unidad · Proveedor demo</summary><form><input type="hidden" name="revision" value="2"><label>Costo por unidad<input data-dinero name="cost" inputmode="decimal" maxlength="20" value="5.500"></label><label>Categoría<select name="category_id"><option value="">Sin categoría</option><option value="1" >Cervezas</option><option value="2" >Licores</option><option value="3" >Sin alcohol</option><option value="4" selected>Para picar</option></select></label><label>Proveedor<input name="supplier" maxlength="60" value="Proveedor demo"></label><label>Mínimo<input name="minimum" type="number" step="0.001" min="0" max="1000000" required value="6"></label><label>Meta al reponer<input name="target" type="number" step="0.001" min="0" max="1000000" required value="20"></label><div class="formactions"><button type="button">Guardar ficha</button></div><p class="hint">La existencia no se edita aquí: cambia sólo con un movimiento, para que quede su causa.</p></form>
+</details></article></div></section>
+
+<section id="ingredientes" class="seccion"><h2>Ingredientes <small>lo que gastan las recetas; no sale en la carta</small></h2>
+<details class="paper"><summary>＋ Nuevo ingrediente</summary><form><label>Nombre<input name="name" required maxlength="120" placeholder="Ron blanco"></label><label>Unidad<select name="unit"><option>unidad</option><option>g</option><option>kg</option><option>ml</option><option>L</option></select></label><label>Existencia inicial<input name="stock" type="number" step="0.001" min="0" max="1000000" required value="0"></label><label>Mínimo (activa alerta)<input name="minimum" type="number" step="0.001" min="0" max="1000000" required value="0"></label><label>Costo por unidad de medida (opcional)<input data-dinero name="cost" inputmode="decimal" maxlength="20" placeholder="60"></label><label>Categoría<select name="category_id"><option value="">Sin categoría</option><option value="1">Cervezas</option><option value="2">Licores</option><option value="3">Sin alcohol</option><option value="4">Para picar</option></select></label><label>…o una nueva<input name="new_category" maxlength="60" placeholder="Cervezas" autocomplete="off"></label><label>Proveedor (opcional)<input name="supplier" maxlength="60" placeholder="Distribuidora Norte"></label><p class="hint">Costo por ml, g o unidad: botella de 750 ml a $45.000 → 60 por ml.</p><div class="formactions"><button type="button">Guardar ingrediente</button><a class="button ghost" href="inventario.html">Cancelar</a></div></form></details>
+<div class="items"><div class="paper empty"><h2>Aún no hay ingredientes</h2><p>Ron, limón, hielo: lo que gastan tus recetas. Créalo arriba con «＋ Nuevo ingrediente».</p></div></div></section>
+    <footer>BAR BOX · Laboratorio local · Guarda un respaldo al terminar tu guardia.</footer>
+  </main>
+</div>
+</body>
+</html>
