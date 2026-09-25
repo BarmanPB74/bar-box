@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ECEDEF">
+<title>Demo interactiva · BAR BOX</title>
+<meta name="description" content="Prueba BAR BOX con un bar inventado: sirve en una mesa, cancela, cobra, cuadra la caja.">
+<link rel="icon" href="static/crest.svg" type="image/svg+xml">
+<link rel="stylesheet" href="static/barbox.css">
+<link rel="stylesheet" href="static/demo.css">
+</head>
+<body>
+<div class="demo-barra">
+  <span><b>Demo interactiva</b> · Bar La Esquina (inventado) · todo pasa en tu navegador, nada se envía</span>
+  <label>Cargo
+    <select id="rol">
+      <option value="dueño">Dueña</option>
+      <option value="bodega">Barista</option>
+      <option value="mesero">Mesera</option>
+    </select>
+  </label>
+  <button id="reiniciar" type="button">Reiniciar</button>
+  <a href="../index.html">Presentación</a>
+</div>
+<nav class="demo-tabs" aria-label="Pantallas">
+  <a href="#/mapa">Mesas</a><a href="#/caja">Caja</a><a href="#/inventario">Inventario</a>
+  <a href="#/contabilidad">Contabilidad</a><a href="#/plano">Plano</a>
+</nav>
+<div class="envoltura">
+  <p id="aviso" class="demo-aviso" role="status" aria-live="polite"></p>
+  <main id="vista"></main>
+  <section class="panel demo-feed">
+    <h2>Avisos en vivo</h2>
+    <p class="pie">Lo que vería al instante otro celular o el computador de la caja.</p>
+    <ol id="feed"></ol>
+  </section>
+  <noscript><p class="nota">Esta demo necesita JavaScript. Mira las <a href="mapa.html">pantallas estáticas</a>.</p></noscript>
+</div>
+<script src="static/demo.js"></script>
+<script src="static/demo-ui.js"></script>
+</body>
+</html>

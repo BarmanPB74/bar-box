@@ -1,0 +1,24 @@
+/* Sólo lo propio de la demo interactiva; lo demás es barbox.css, la hoja de la app. */
+.demo-barra{position:sticky; top:0; z-index:20; display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center;
+  padding:10px 16px; background:#1d2a26; color:#f3e7c6; font:13px/1.4 system-ui,sans-serif}
+.demo-barra b{color:#f3d58a}
+.demo-barra a{color:#f3d58a}
+.demo-barra select,.demo-barra button{min-height:34px; padding:2px 10px; border-radius:8px; border:1px solid #f3d58a;
+  background:transparent; color:#f3e7c6; font:inherit; width:auto}
+.demo-barra select option{color:#1E2329}
+.demo-tabs{display:flex; gap:4px; overflow-x:auto; padding:8px 16px; background:var(--superficie-alta); border-bottom:1px solid var(--linea)}
+.demo-tabs a{flex:0 0 auto; padding:10px 14px; border-radius:10px; color:var(--tinta); text-decoration:none; font:600 14px var(--sans)}
+.demo-tabs a[aria-current="page"]{background:var(--oro-claro); color:var(--oro)}
+.demo-aviso{min-height:1.4em; margin:12px 0 0; color:var(--frio); font-weight:600}
+.demo-aviso.malo{color:var(--alarma)}
+.demo-feed ol{list-style:none; margin:0; padding:0; font-size:14px}
+.demo-feed li{padding:6px 0; border-bottom:1px solid var(--linea-suave)}
+.demo-num{display:inline-block; min-width:3.2em; color:var(--tenue); font-variant-numeric:tabular-nums}
+.demo-feed b{font-family:ui-monospace,monospace; font-size:12px; color:var(--oro)}
+.demo-ticket{max-width:300px; margin:16px auto; padding:16px; background:#fff; color:#111; font:14px/1.4 ui-monospace,monospace;
+  box-shadow:var(--sombra-2); border-radius:6px}
+.demo-ticket p{margin:4px 0}
+.demo-ticket .linea{display:flex; justify-content:space-between; gap:12px}
+.demo-ticket .pequeno{font-size:12px}
+.demo-ticket hr{border:0; border-top:1px dashed #999}
+#vista input,#vista select{margin:4px 0}

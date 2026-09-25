@@ -527,3 +527,49 @@ h2.grupo small{font:12px var(--sans); color:var(--tenue)}
 .mov{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 10px; align-items:end; margin-top:var(--e3)}
 .mov button{min-height:44px}
 @media(min-width:560px){ .mov{grid-template-columns:auto minmax(0,1fr) minmax(0,2fr) auto} }
+
+/* --- Contabilidad: revisión y gráficas (2026-09-25) -------------------
+   Colores de serie validados con el validador de dataviz sobre --fondo:
+   azul, naranja, aguamarina, amarillo (CVD ΔE ≥ 9.1 entre vecinos). Tres
+   quedan bajo 3:1 de contraste: por eso cada segmento lleva su nombre y
+   valor en la leyenda, y las barras tienen su tabla. «Otros» va en gris. */
+:root{--serie-1:#2a78d6; --serie-2:#eb6834; --serie-3:#1baf7a; --serie-4:#eda100; --serie-otros:#8A9098}
+.revision.pendiente{border-left:var(--borde-grueso) solid var(--alarma)}
+.revision h3,.nota-periodo h3,#propinas h3{font:600 13px var(--sans); letter-spacing:.1em; text-transform:uppercase; color:var(--tenue-alto); margin:var(--e5) 0 var(--e2)}
+.grafica-anillo{display:flex; flex-wrap:wrap; gap:var(--e5); align-items:center}
+.grafica-anillo svg{width:min(220px,100%); height:auto; flex:0 0 auto}
+.grafica-anillo .pista{stroke:var(--hueco)}
+.anillo-cifra{font:600 4px var(--sans); fill:var(--tinta)}
+.anillo-pie{font:2.6px var(--sans); fill:var(--tenue)}
+circle.serie-1{stroke:var(--serie-1)} circle.serie-2{stroke:var(--serie-2)} circle.serie-3{stroke:var(--serie-3)}
+circle.serie-4{stroke:var(--serie-4)} circle.serie-otros{stroke:var(--serie-otros)}
+.leyenda{list-style:none; margin:0; padding:0; display:grid; gap:var(--e2); flex:1 1 220px; font-size:14px; color:var(--tinta)}
+.leyenda li{display:flex; gap:var(--e2); align-items:flex-start}
+.muestra{width:12px; height:12px; border-radius:3px; margin-top:4px; flex:0 0 12px}
+.muestra.serie-1{background:var(--serie-1)} .muestra.serie-2{background:var(--serie-2)} .muestra.serie-3{background:var(--serie-3)}
+.muestra.serie-4{background:var(--serie-4)} .muestra.serie-otros{background:var(--serie-otros)}
+.nota-periodo{margin-top:var(--e4); font-size:14px; color:var(--tinta)}
+.grafica-barras{width:100%; height:auto; display:block; margin:var(--e3) 0}
+.grafica-barras path.serie-1{fill:var(--serie-1)}
+.grafica-barras .blanco{fill:transparent}
+.grafica-barras g:hover path{fill:var(--anillo)}
+.grafica-barras .base{stroke:var(--linea); stroke-width:1}
+.grafica-barras .eje{font:9px var(--sans); fill:var(--tenue)}
+.grafica-barras .valor{font:600 9px var(--sans); fill:var(--tinta)}
+
+/* --- Plano editable de la sala (2026-09-25) ------------------------------ */
+.plano{display:grid; gap:6px; width:max-content; padding:4px}
+.plano.c1{grid-template-columns:repeat(1,64px)} .plano.c2{grid-template-columns:repeat(2,64px)} .plano.c3{grid-template-columns:repeat(3,64px)} .plano.c4{grid-template-columns:repeat(4,64px)} .plano.c5{grid-template-columns:repeat(5,64px)} .plano.c6{grid-template-columns:repeat(6,64px)} .plano.c7{grid-template-columns:repeat(7,64px)} .plano.c8{grid-template-columns:repeat(8,64px)} .plano.c9{grid-template-columns:repeat(9,64px)} .plano.c10{grid-template-columns:repeat(10,64px)} .plano.c11{grid-template-columns:repeat(11,64px)} .plano.c12{grid-template-columns:repeat(12,64px)}
+@media(max-width:520px){.plano.c1{grid-template-columns:repeat(1,52px)} .plano.c2{grid-template-columns:repeat(2,52px)} .plano.c3{grid-template-columns:repeat(3,52px)} .plano.c4{grid-template-columns:repeat(4,52px)} .plano.c5{grid-template-columns:repeat(5,52px)} .plano.c6{grid-template-columns:repeat(6,52px)} .plano.c7{grid-template-columns:repeat(7,52px)} .plano.c8{grid-template-columns:repeat(8,52px)} .plano.c9{grid-template-columns:repeat(9,52px)} .plano.c10{grid-template-columns:repeat(10,52px)} .plano.c11{grid-template-columns:repeat(11,52px)} .plano.c12{grid-template-columns:repeat(12,52px)}}
+.plano .celda{min-height:52px; border-radius:10px; font:12px/1.15 var(--sans); color:var(--tinta); overflow-wrap:anywhere; padding:4px; touch-action:none; user-select:none}
+.plano .libre{background:transparent; border:var(--borde-fino) dashed var(--linea); box-shadow:none}
+.plano .ficha{background:var(--superficie-alta); border:var(--borde-medio) solid var(--oro-suave); box-shadow:var(--sombra-1); cursor:grab}
+.plano .ficha.redonda{border-radius:50%}
+.plano .ficha[aria-pressed="true"]{outline:var(--borde-grueso) solid var(--anillo); outline-offset:2px}
+.plano .ficha.arrastrando{cursor:grabbing; opacity:.85; position:relative; z-index:2; box-shadow:var(--sombra-3)}
+.plano .libre.destino,.plano .ficha.destino{background:var(--oro-claro)}
+.plano-titulo{font:600 13px var(--sans); letter-spacing:.1em; text-transform:uppercase; color:var(--tenue-alto); margin:var(--e4) 0 var(--e1)}
+.casilla{display:flex; gap:var(--e2); align-items:center; min-height:44px}
+
+/* Página sin red (PWA, F5) */
+.sin-red{max-width:560px; margin:10vh auto; padding:0 16px}
