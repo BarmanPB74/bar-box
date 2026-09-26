@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>BAR BOX · El oficio, bajo control</title>
-<meta name="description" content="BAR BOX: mesas, caja, inventario y costos para bares pequeños. Hecho desde la barra.">
+<meta name="description" content="BAR BOX: ventas, caja, inventario, costos y factura para negocios pequeños que venden en puestos: bares, cafés, tiendas, barberías. Hecho desde la barra.">
 <link rel="icon" href="demo/static/crest.svg" type="image/svg+xml">
 <style>
 :root{--fondo:#ECEDEF;--papel:#F6F7F8;--tinta:#1F2427;--tenue:#4B535A;--oro:#8A6A1F;--linea:#D5D8DC;--acento:#1d2a26}
@@ -40,16 +40,19 @@ footer{margin:64px 0 40px;padding-top:20px;border-top:1px solid var(--linea);col
   <div><h1>BAR BOX</h1><p class="lema">El oficio, bajo control</p></div>
 </header>
 
-<p class="intro">Una herramienta para bares y cafés pequeños, hecha desde la barra: mesas, caja,
-inventario y costos en un solo lugar, en el teléfono o en el computador del local,
-y funciona sin internet.</p>
+<p class="intro">Una herramienta para negocios pequeños, hecha desde la barra: ventas, caja,
+inventario, costos y factura en un solo lugar, en el teléfono o en el computador del local,
+y funciona sin internet. Nació en un bar, pero sirve igual para un café, una tienda de barrio
+o una barbería: todo negocio que vende en puestos (mesas, sillas o cajas) y gasta insumos.</p>
 
 <div class="botones">
-  <a class="boton lleno" href="demo/app.html">Probar la demo interactiva</a>
+  <a class="boton lleno" href="demo/app.html">Probar un turno completo</a>
   <a class="boton borde" href="demo/mapa.html">Ver pantallas</a>
 </div>
 
-<h2>Una noche de servicio</h2>
+<h2>Un turno, en cualquier negocio</h2>
+<p>La demo trae cuatro negocios inventados: <strong>un bar, un café con panadería, un minimercado y una barbería</strong>.
+Elige uno y haz el turno de principio a fin en 9 pasos, o simula una hora pico y mira el tablero del dueño.</p>
 <div class="rejilla">
   <div class="tarjeta"><h3>Mapa de mesas</h3><p>Cada mesa dice si está libre, servida o pidió la cuenta. Un toque sirve un producto y abre la cuenta. <a href="demo/mapa.html">Ver ↗</a></p></div>
   <div class="tarjeta"><h3>Cuenta de la mesa</h3><p>La carta por categorías, lo servido y el cobro con propina sugerida voluntaria. <a href="demo/mesa.html">Ver ↗</a></p></div>
@@ -60,21 +63,27 @@ y funciona sin internet.</p>
   <div class="tarjeta"><h3>Revisión del dueño</h3><p>Al día siguiente, en un solo cuadro: el último cierre, lo cancelado y qué contar en la bodega para verificarlo. <a href="demo/app.html#/contabilidad">Probar ↗</a></p></div>
   <div class="tarjeta"><h3>En vivo en todos los aparatos</h3><p>Lo que se comanda en un celular aparece en la caja y en la cocina al instante. Se instala como app. <a href="demo/app.html">Probar ↗</a></p></div>
   <div class="tarjeta"><h3>Costos y margen</h3><p>Costo de cada receta, margen por producto y valor de la bodega por categoría. <a href="demo/contabilidad.html">Ver ↗</a></p></div>
+  <div class="tarjeta"><h3>Pago dividido</h3><p>Hasta tres formas de pago en una cuenta, con cambio y referencia. La caja cuadra cada medio por separado. <a href="demo/app.html#/inicio">Probar ↗</a></p></div>
+  <div class="tarjeta"><h3>Vende aunque falte inventario</h3><p>La venta nunca se frena: lo que faltaba queda pendiente hasta que llega la compra o se cuenta la bodega. <a href="demo/app.html#/inventario">Probar ↗</a></p></div>
+  <div class="tarjeta"><h3>Clientes y factura electrónica</h3><p>Ficha del cliente con dígito de verificación automático y factura con sus datos, lista para entregarla a un proveedor tecnológico de la DIAN. <a href="demo/app.html#/clientes">Probar ↗</a></p></div>
+  <div class="tarjeta"><h3>Informe diario que no se altera</h3><p>Un informe por turno, con número consecutivo y una huella encadenada: si alguien cambia uno, la cadena lo delata. <a href="demo/app.html#/contabilidad">Probar ↗</a></p></div>
+  <div class="tarjeta"><h3>Tablero del dueño</h3><p>Costo de venta, ticket promedio, fuga por conteos, cortesías, ingeniería de menú y punto de equilibrio. <a href="demo/app.html#/tablero">Probar ↗</a></p></div>
 </div>
 
 <h2>Cómo está hecho</h2>
 <ul class="lista">
   <li><strong>Python, Flask y SQLite.</strong> Un solo programa y un archivo de datos: corre en un teléfono Android (Termux) o en un computador.</li>
   <li><strong>Funciona sin internet.</strong> Nada de librerías externas en el navegador: la barra no se detiene si se cae la red.</li>
-  <li><strong>Más de 400 pruebas automáticas</strong> se corren antes de guardar cada cambio.</li>
-  <li><strong>Cuentas por cargo:</strong> dueño, barista y mesero ven y pueden hacer cosas distintas.</li>
+  <li><strong>Más de 600 pruebas automáticas</strong> se corren antes de guardar cada cambio.</li>
+  <li><strong>Cuentas por cargo:</strong> dueño, encargado y vendedor ven y pueden hacer cosas distintas.</li>
   <li><strong>El dinero nunca se redondea a escondidas:</strong> todo se guarda en centavos y cada movimiento deja rastro.</li>
 </ul>
 
 <h2>Estado</h2>
-<p class="estado">Versión 0.7, en laboratorio y en camino a la primera prueba en un bar real.
-Todavía no emite factura electrónica DIAN: el comprobante de venta dice claramente que no lo es.
-El código fuente es privado; esta página muestra el producto con datos ficticios.</p>
+<p class="estado">Versión 0.8, en laboratorio y en camino a la primera prueba en un negocio real.
+La factura electrónica ya se arma completa (numeración, impuestos, CUFE, XML y QR) y se entrega a un
+proveedor tecnológico; hasta que el negocio se habilite ante la DIAN y la acepte en producción, sale marcada
+«PRUEBAS · SIN VALIDEZ FISCAL». El código fuente es privado; esta página muestra el producto con datos ficticios.</p>
 
 <footer>
   Hecho por <strong>BarmanPB74</strong>, barman en Colombia que aprendió a programar para resolver su propio turno.<br>

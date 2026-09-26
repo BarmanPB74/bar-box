@@ -22,3 +22,22 @@
 .demo-ticket .pequeno{font-size:12px}
 .demo-ticket hr{border:0; border-top:1px dashed #999}
 #vista input,#vista select{margin:4px 0}
+/* 2026-09-26: recorrido del turno, negocios, pago dividido, factura de pruebas */
+.demo-negocios{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px}
+.demo-negocio{display:flex; flex-direction:column; align-items:flex-start; gap:4px; padding:14px 16px; min-height:74px; text-align:left;
+  border:2px solid var(--linea); border-radius:14px; background:var(--superficie); color:var(--tinta); font:inherit; cursor:pointer}
+.demo-negocio small{color:var(--tenue)}
+.demo-negocio[aria-pressed="true"]{border-color:var(--oro); background:var(--oro-claro)}
+.demo-pasos{list-style:none; margin:0 0 12px; padding:0; counter-reset:paso}
+.demo-pasos li{display:flex; gap:10px; align-items:center; padding:8px 0; border-bottom:1px solid var(--linea-suave)}
+.demo-pasos a{color:var(--tinta)}
+.demo-pasos li.hecho a{color:var(--tenue); text-decoration:line-through}
+.demo-marca{flex:none; width:26px; height:26px; display:inline-flex; align-items:center; justify-content:center;
+  border:2px solid var(--linea); border-radius:50%; color:var(--frio); font-weight:700}
+.demo-pasos li.hecho .demo-marca{border-color:var(--frio)}
+.visually{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0)}
+.demo-pago{margin:0}
+.demo-sello{text-align:center; font-weight:700; border:2px solid #111; padding:4px; margin:0 0 8px}
+.stats article strong{font-size:28px}
+#vista td input{max-width:7em}
+#vista td .boton{min-height:34px; padding:0 10px; margin:2px}

@@ -5,27 +5,21 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#ECEDEF">
 <title>Demo interactiva · BAR BOX</title>
-<meta name="description" content="Prueba BAR BOX con un bar inventado: sirve en una mesa, cancela, cobra, cuadra la caja.">
+<meta name="description" content="Prueba un turno completo de BAR BOX en un bar, un café, una tienda o una barbería inventados: vende, cancela, cobra dividido, factura, cuenta la bodega, cierra la caja y mira el tablero del dueño.">
 <link rel="icon" href="static/crest.svg" type="image/svg+xml">
 <link rel="stylesheet" href="static/barbox.css">
 <link rel="stylesheet" href="static/demo.css">
 </head>
 <body>
 <div class="demo-barra">
-  <span><b>Demo interactiva</b> · Bar La Esquina (inventado) · todo pasa en tu navegador, nada se envía</span>
-  <label>Cargo
-    <select id="rol">
-      <option value="dueño">Dueña</option>
-      <option value="bodega">Barista</option>
-      <option value="mesero">Mesera</option>
-    </select>
-  </label>
+  <span><b>Demo interactiva</b> · <span id="negocio">Bar La Esquina</span> (inventado) · todo pasa en tu navegador, nada se envía</span>
+  <label>Cargo <select id="rol"></select></label>
   <button id="reiniciar" type="button">Reiniciar</button>
   <a href="../index.html">Presentación</a>
 </div>
 <nav class="demo-tabs" aria-label="Pantallas">
-  <a href="#/mapa">Mesas</a><a href="#/caja">Caja</a><a href="#/inventario">Inventario</a>
-  <a href="#/contabilidad">Contabilidad</a><a href="#/plano">Plano</a>
+  <a href="#/inicio">Recorrido</a><a href="#/mapa" id="tab-puestos">Mesas</a><a href="#/caja">Caja</a><a href="#/inventario">Inventario</a>
+  <a href="#/clientes">Clientes</a><a href="#/contabilidad">Contabilidad</a><a href="#/tablero">Tablero</a><a href="#/plano">Plano</a>
 </nav>
 <div class="envoltura">
   <p id="aviso" class="demo-aviso" role="status" aria-live="polite"></p>
