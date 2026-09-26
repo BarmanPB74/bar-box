@@ -6,7 +6,10 @@
 .demo-barra select,.demo-barra button{min-height:34px; padding:2px 10px; border-radius:8px; border:1px solid #f3d58a;
   background:transparent; color:#f3e7c6; font:inherit; width:auto}
 .demo-barra select option{color:#1E2329}
-.demo-tabs{display:flex; gap:4px; overflow-x:auto; padding:8px 16px; background:var(--superficie-alta); border-bottom:1px solid var(--linea)}
+/* Es un <nav>: barbox.css le da al menú lateral de la app min-height de casi toda la pantalla
+   desde 860 px. Aquí es una barra: sin esa altura y sin estirar las pestañas. */
+.demo-tabs{display:flex; align-items:center; gap:4px; overflow-x:auto; min-height:0; padding:8px 16px;
+  background:var(--superficie-alta); border-bottom:1px solid var(--linea)}
 .demo-tabs a{flex:0 0 auto; padding:10px 14px; border-radius:10px; color:var(--tinta); text-decoration:none; font:600 14px var(--sans)}
 .demo-tabs a[aria-current="page"]{background:var(--oro-claro); color:var(--oro)}
 .demo-aviso{min-height:1.4em; margin:12px 0 0; color:var(--frio); font-weight:600}
