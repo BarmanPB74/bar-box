@@ -431,7 +431,6 @@
       this.exigir('notaCredito', 'La nota crédito la emite sólo el dueño: devuelve plata de algo facturado.');
       var f = this.e.facturas.filter(function (x) { return x.numero === numero; })[0];
       if (!f) throw new Error('Esa factura no está.');
-      if (f.tipo === 'pos') throw new Error('La nota crédito es de la factura. El documento POS se corrige con su nota de ajuste.');
       var c = datos.concepto, motivo = String(datos.motivo || '').trim();
       if (!CONCEPTOS_NC[c]) throw new Error('Elige el concepto.');
       if (!motivo) throw new Error('Escribe el motivo: sale en la nota.');
@@ -467,11 +466,15 @@
                         || 'Escribe el valor a acreditar de al menos un producto, o un porcentaje.');
       }
       var suma = function (k) { return renglones.reduce(function (s, x) { return s + x[k]; }, 0); };
-      var nota = { numero: 'NC' + (this.e.notas.length + 1), factura: f.numero, concepto: c, nombreConcepto: CONCEPTOS_NC[c],
+      // Al documento POS le corresponde la nota de ajuste (NA, tipo 94): mismas reglas, consecutivo aparte.
+      var ajuste = f.tipo === 'pos', prefijo = ajuste ? 'NA' : 'NC';
+      var hechas = this.e.notas.filter(function (x) { return x.numero.indexOf(prefijo) === 0; }).length;
+      var nota = { numero: prefijo + (hechas + 1), ajuste: ajuste, nombre: ajuste ? 'Nota de ajuste' : 'Nota crédito',
+                   factura: f.numero, concepto: c, nombreConcepto: CONCEPTOS_NC[c],
                    motivo: motivo, hora: hora(), lineas: renglones, base: suma('base'), impuesto: suma('impuesto'),
                    total: suma('total'), comprador: f.comprador, estado: 'Aceptada por el simulador (ambiente de pruebas)' };
       this.e.notas.unshift(nota);
-      this.avisar('nota_credito', nota.numero + ' corrige ' + f.numero + ' por ' + pesos(nota.total) + ' (pruebas)');
+      this.avisar(ajuste ? 'nota_ajuste' : 'nota_credito', nota.numero + ' corrige ' + f.numero + ' por ' + pesos(nota.total) + ' (pruebas)');
       return nota;
     },
     // --- Informe diario («Z») ---
