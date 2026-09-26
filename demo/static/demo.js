@@ -381,12 +381,15 @@
       this.avisar('cliente', 'Cliente guardado: ' + nombre);
       return k;
     },
-    facturar: function (reciboId, clienteId) {
-      this.exigir('facturar', 'La factura la emite el dueño o el encargado.');
+    // tipo 'pos': documento equivalente electrónico del tiquete POS (hasta 5 UVT, CUDE, caja y cajero).
+    facturar: function (reciboId, clienteId, tipo) {
+      var pos = tipo === 'pos';
+      this.exigir('facturar', (pos ? 'El documento POS' : 'La factura') + ' lo emite el dueño o el encargado.');
       var r = this.e.cobradas.filter(function (x) { return x.id === reciboId; })[0];
       if (!r) throw new Error('Esa venta ya no está en el turno.');
-      if (r.factura) throw new Error('Esa venta ya tiene factura: una venta, una factura.');
+      if (r.factura) throw new Error('Esa venta ya tiene su documento (factura o POS): una venta, un documento.');
       var k = clienteId ? this.e.clientes.filter(function (x) { return x.id === clienteId; })[0] : null;
+      if (pos && r.total > 5 * UVT) throw new Error('El documento POS sólo va hasta 5 UVT (' + pesos(5 * UVT) + '): esta venta necesita factura electrónica.');
       if (!k && r.total > 5 * UVT) throw new Error('La venta supera 5 UVT: la ley pide los datos del comprador.');
       var tarifas = {};
       var lineas = r.renglones.map(function (l) {
@@ -395,7 +398,9 @@
         t.base += d[0]; t.impuesto += d[1];
         return { nombre: l.nombre, qty: l.qty, precio: l.precio, total: l.precio * l.qty, base: d[0], impuesto: d[1] };
       });
-      var f = { numero: 'SETP' + this.e.consecutivo++, recibo: r.id, hora: hora(), lineas: lineas,
+      var numero = pos ? 'POS' + (this.e.consecutivoPos = (this.e.consecutivoPos || 0) + 1) : 'SETP' + this.e.consecutivo++;
+      var f = { numero: numero, tipo: pos ? 'pos' : 'factura', caja: pos ? 'CAJA-01 (ficticia)' : '', cajero: pos ? this.autor() : '',
+                recibo: r.id, hora: hora(), lineas: lineas,
                 tarifas: Object.keys(tarifas).map(function (c) { return tarifas[c]; }),
                 base: lineas.reduce(function (s, l) { return s + l.base; }, 0),
                 impuesto: lineas.reduce(function (s, l) { return s + l.impuesto; }, 0), total: r.total,
@@ -405,7 +410,7 @@
       r.factura = f.numero;
       this.e.facturas.unshift(f);
       if (k) this.hito('factura');
-      this.avisar('factura', f.numero + ' para ' + f.comprador.nombre + ' (pruebas)');
+      this.avisar(pos ? 'documento_pos' : 'factura', f.numero + ' para ' + f.comprador.nombre + ' (pruebas)');
       return f;
     },
     // --- Nota crédito: la única forma de corregir una factura aceptada ---
@@ -426,6 +431,7 @@
       this.exigir('notaCredito', 'La nota crédito la emite sólo el dueño: devuelve plata de algo facturado.');
       var f = this.e.facturas.filter(function (x) { return x.numero === numero; })[0];
       if (!f) throw new Error('Esa factura no está.');
+      if (f.tipo === 'pos') throw new Error('La nota crédito es de la factura. El documento POS se corrige con su nota de ajuste.');
       var c = datos.concepto, motivo = String(datos.motivo || '').trim();
       if (!CONCEPTOS_NC[c]) throw new Error('Elige el concepto.');
       if (!motivo) throw new Error('Escribe el motivo: sale en la nota.');

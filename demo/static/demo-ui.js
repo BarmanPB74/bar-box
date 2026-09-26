@@ -207,7 +207,12 @@
             h('p.pie', null, '¿El cliente la pide a su nombre? ', h('a', { href: '#/clientes', texto: 'Guarda su ficha' }), ' y elígelo aquí.'),
             elegir, h('div.acciones', null, h('button.boton', { type: 'button', texto: 'Emitir factura', onclick: function () {
               hacer(function () { var f = bar.facturar(r.id, elegir.value ? Number(elegir.value) : null); ir('/factura/' + f.numero); });
-            } }))]
+            } }), r.total <= 5 * D.UVT && h('button.boton suave', { type: 'button', texto: 'Documento POS', onclick: function () {
+              hacer(function () { var f = bar.facturar(r.id, null, 'pos'); ir('/factura/' + f.numero); });
+            } })),
+            h('p.pie', { texto: r.total <= 5 * D.UVT
+              ? 'Documento POS: el tiquete electrónico para ventas de hasta 5 UVT (' + D.pesos(5 * D.UVT) + '). Una venta lleva un solo documento.'
+              : 'Pasa de 5 UVT: aquí no va documento POS, va factura electrónica.' })]
         : h('p.nota', { texto: 'La factura la emite el dueño o el encargado.' })),
       h('div.acciones', null, h('a.boton', { href: '#/mapa', texto: 'Volver a ' + n.puesto.toLowerCase() + 's' }))];
   }
@@ -215,10 +220,12 @@
   function factura(numero) {
     var f = bar.e.facturas.filter(function (x) { return x.numero === numero; })[0], n = neg();
     if (!f) return [h('p.nota', { texto: 'Esa factura no está.' })];
+    var pos = f.tipo === 'pos';
     return [h('div.demo-ticket', null,
       h('p.demo-sello', { texto: 'PRUEBAS · SIN VALIDEZ FISCAL' }),
       h('p', null, h('b', { texto: n.nombre.toUpperCase() }), h('br'), 'NIT 900.000.000-' + D.digito('900000000') + ' (ficticio)', h('br'),
-        'Documento N.º ' + f.numero + ' · ' + f.hora),
+        (pos ? 'Documento POS N.º ' : 'Documento N.º ') + f.numero + ' · ' + f.hora,
+        pos && [h('br'), 'Caja: ' + f.caja + ' · Cajero: ' + f.cajero]),
       h('hr'), h('p', null, h('b', { texto: 'Adquirente' }), h('br'), f.comprador.nombre, h('br'), f.comprador.tipo + ' ' + f.comprador.doc,
         f.comprador.correo && [h('br'), f.comprador.correo]),
       h('hr'), f.lineas.map(function (l) { return h('p.linea', null, h('span', { texto: l.qty + ' × ' + l.nombre }), h('span', { texto: D.pesos(l.total) })); }),
@@ -227,15 +234,20 @@
         return h('p.linea', null, h('span', { texto: t.nombre }), h('span', { texto: D.pesos(t.impuesto) }));
       }),
       h('p.linea', null, h('b', { texto: 'Total' }), h('b', { texto: D.pesos(f.total) })),
-      h('hr'), h('p.pequeno', { texto: 'CUFE: en la app lo calcula BAR BOX con la fórmula SHA-384 de la DIAN; aquí no. ' + f.estado + '.' })),
-      h('section.panel', null, h('h2', { texto: 'Cómo es en la app' }),
-        h('p', { texto: 'BAR BOX arma la factura (numeración de la resolución, impuestos, CUFE, XML y QR) y la entrega al proveedor tecnológico que el negocio contrate, que la firma y la manda a la DIAN. Sólo cuando la DIAN la acepta en producción dice «Factura electrónica de venta». Antes, siempre dice PRUEBAS.' })),
+      h('hr'), h('p.pequeno', { texto: (pos ? 'CUDE: en la app lo calcula BAR BOX con el PIN del software' : 'CUFE: en la app lo calcula BAR BOX con la fórmula SHA-384 de la DIAN') + '; aquí no. ' + f.estado + '.' })),
+      h('section.panel', null, h('h2', { texto: 'Cómo es en la app' }), pos
+        ? h('p', { texto: 'El documento POS (Resolución DIAN 165 de 2023) es el tiquete electrónico de la caja: tiene su propia resolución y prefijo, sólo sirve para ventas de hasta 5 UVT y lleva la caja y el cajero. Se entrega al mismo proveedor tecnológico. Sólo cuando la DIAN lo acepta en producción dice «Documento equivalente electrónico».' })
+        : h('p', { texto: 'BAR BOX arma la factura (numeración de la resolución, impuestos, CUFE, XML y QR) y la entrega al proveedor tecnológico que el negocio contrate, que la firma y la manda a la DIAN. Sólo cuando la DIAN la acepta en producción dice «Factura electrónica de venta». Antes, siempre dice PRUEBAS.' })),
       corregir(f),
       h('div.acciones', null, h('a.boton', { href: '#/clientes', texto: 'Clientes y facturas' }))];
   }
 
   // Una factura aceptada no se borra: se corrige con nota crédito (sólo el dueño).
   function corregir(f) {
+    if (f.tipo === 'pos') {
+      return h('section.panel', null, h('h2', { texto: 'Correcciones' }),
+        h('p.nota', { texto: 'La nota crédito es de la factura. El documento POS se corrige con su nota de ajuste, que BAR BOX todavía no emite.' }));
+    }
     var suyas = bar.e.notas.filter(function (n) { return n.factura === f.numero; });
     var lineas = bar.porAcreditar(f.numero), queda = lineas.some(function (l) { return l.queda > 0; });
     var lista = suyas.length ? suyas.map(function (n) {
@@ -325,11 +337,11 @@
           bar.e.clientes.length ? bar.e.clientes.map(function (k) {
             return fila(k.nombre, (k.tipo === '31' ? 'NIT ' : 'C.C. ') + k.doc + (k.dv ? '-' + k.dv : '') + ' · ' + k.correo, '');
           }) : h('p.nota', { texto: 'Todavía ninguno.' }),
-          h('h2', { texto: 'Facturas del turno' }),
+          h('h2', { texto: 'Facturas y documentos POS' }),
           bar.e.facturas.length ? bar.e.facturas.map(function (f) {
             var notas = bar.e.notas.filter(function (n) { return n.factura === f.numero; }).map(function (n) { return n.numero; });
             return h('div.renglon', null, h('span.txt', null, h('a', { href: '#/factura/' + f.numero, texto: f.numero }),
-              h('small', { texto: f.comprador.nombre + ' · pruebas' + (notas.length ? ' · notas ' + notas.reverse().join(', ') : '') })),
+              h('small', { texto: (f.tipo === 'pos' ? 'Documento POS · ' : '') + f.comprador.nombre + ' · pruebas' + (notas.length ? ' · notas ' + notas.reverse().join(', ') : '') })),
               h('span.val', { texto: D.pesos(f.total) }));
           }) : h('p.nota', { texto: 'Se emiten desde el comprobante de una venta cobrada.' })))];
   }
