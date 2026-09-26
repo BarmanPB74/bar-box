@@ -110,8 +110,12 @@
   var PERMISOS = {
     cancelar: ['dueño', 'bodega'], caja_cerrar: ['dueño', 'bodega'], caja_abrir: ['dueño', 'bodega'],
     plano: ['dueño', 'bodega'], contabilidad: ['dueño'], tablero: ['dueño'], costos: ['dueño', 'bodega'],
-    clientes: ['dueño', 'bodega'], facturar: ['dueño', 'bodega'], conteo: ['dueño', 'bodega']
+    clientes: ['dueño', 'bodega'], facturar: ['dueño', 'bodega'], conteo: ['dueño', 'bodega'], notaCredito: ['dueño']
   };
+  // Conceptos de nota crédito (anexo técnico DIAN, tabla 13.2.4). 2 y 1 por unidades; 3 a 6 por valor.
+  var CONCEPTOS_NC = { '2': 'Anulación de la factura', '1': 'Devolución parcial', '3': 'Rebaja o descuento',
+                       '4': 'Ajuste de precio', '5': 'Descuento comercial por pronto pago',
+                       '6': 'Descuento comercial por volumen de ventas' };
   function puede(rol, que) { return (PERMISOS[que] || ['dueño']).indexOf(rol) >= 0; }
 
   function inicial(tipo) {
@@ -126,7 +130,7 @@
       salones: d.zonas.map(function (z) { return { id: z.id, nombre: z.nombre, columnas: 1, filas: 1 }; }),
       mesas: d.puestos.map(function (m) { return { id: m[0], nombre: m[1], salon: m[2], gx: m[3], gy: m[4], forma: m[5] }; }),
       cuentas: {}, cobradas: [], caja: [], retirados: [], avisos: [], revisado: 0, cierre: null,
-      faltantes: [], conteos: [], clientes: [], facturas: [], informes: [], consecutivo: 990000000,
+      faltantes: [], conteos: [], clientes: [], facturas: [], notas: [], informes: [], consecutivo: 990000000,
       gastosFijos: 600000000, semilla: 7
     };
   }
@@ -168,7 +172,20 @@
     return ('0000000' + a.toString(16)).slice(-8) + ('0000000' + b.toString(16)).slice(-8);
   }
 
-  function Bar(estado) { this.e = estado && estado.version === 2 ? estado : inicial(estado && estado.tipo); }
+  function Bar(estado) {
+    this.e = estado && estado.version === 2 ? estado : inicial(estado && estado.tipo);
+    if (!this.e.notas) this.e.notas = [];              // demo guardada antes de las notas crédito
+  }
+  // Renglón de nota crédito por `valor` (centavos con impuesto); qty = unidades devueltas, 0 = rebaja
+  // por valor. La base se reparte por el valor acumulado, como domain.acreditar: todas las notas de
+  // un renglón suman justo su base y su impuesto.
+  function acreditar(l, valor, qty) {
+    if (!(valor > 0) || valor > l.queda) throw new Error(l.nombre + ': quedan ' + pesos(l.queda) + ' por acreditar.');
+    var parte = function (v) { return Math.floor((l.base * v * 2 + l.total) / (l.total * 2)); };
+    var base = parte(l.yaValor + valor) - parte(l.yaValor);
+    return { renglon: l.i, nombre: l.nombre, qty: qty || 1, precio: qty ? l.precio : valor, base: base,
+             impuesto: valor - base, total: valor, porValor: !qty };
+  }
   Bar.prototype = {
     negocio: function () { return NEGOCIOS[this.e.tipo]; },
     producto: function (id) { return this.e.productos.filter(function (p) { return p.id === id; })[0]; },
@@ -376,7 +393,7 @@
         var d = desglose(l.precio * l.qty, l.impuesto);
         var t = tarifas[l.impuesto] || (tarifas[l.impuesto] = { nombre: IMPUESTOS[l.impuesto][0], base: 0, impuesto: 0 });
         t.base += d[0]; t.impuesto += d[1];
-        return { nombre: l.nombre, qty: l.qty, total: l.precio * l.qty, base: d[0], impuesto: d[1] };
+        return { nombre: l.nombre, qty: l.qty, precio: l.precio, total: l.precio * l.qty, base: d[0], impuesto: d[1] };
       });
       var f = { numero: 'SETP' + this.e.consecutivo++, recibo: r.id, hora: hora(), lineas: lineas,
                 tarifas: Object.keys(tarifas).map(function (c) { return tarifas[c]; }),
@@ -390,6 +407,66 @@
       if (k) this.hito('factura');
       this.avisar('factura', f.numero + ' para ' + f.comprador.nombre + ' (pruebas)');
       return f;
+    },
+    // --- Nota crédito: la única forma de corregir una factura aceptada ---
+    porAcreditar: function (numero) {
+      var notas = this.e.notas.filter(function (n) { return n.factura === numero; });
+      var f = this.e.facturas.filter(function (x) { return x.numero === numero; })[0];
+      return f.lineas.map(function (l, i) {
+        var ya = 0, yaValor = 0;
+        notas.forEach(function (n) {
+          n.lineas.forEach(function (x) { if (x.renglon === i) { yaValor += x.total; if (!x.porValor) ya += x.qty; } });
+        });
+        return { i: i, nombre: l.nombre, qty: l.qty, precio: l.precio || l.total / l.qty, total: l.total, base: l.base,
+                 ya: ya, yaValor: yaValor, queda: l.total - yaValor };
+      });
+    },
+    // datos: concepto, motivo, unidades {renglón: n}, valores {renglón: centavos}, porcentaje (3 a 6).
+    notaCredito: function (numero, datos) {
+      this.exigir('notaCredito', 'La nota crédito la emite sólo el dueño: devuelve plata de algo facturado.');
+      var f = this.e.facturas.filter(function (x) { return x.numero === numero; })[0];
+      if (!f) throw new Error('Esa factura no está.');
+      var c = datos.concepto, motivo = String(datos.motivo || '').trim();
+      if (!CONCEPTOS_NC[c]) throw new Error('Elige el concepto.');
+      if (!motivo) throw new Error('Escribe el motivo: sale en la nota.');
+      var pct = ['3', '4', '5', '6'].indexOf(c) >= 0 && String(datos.porcentaje || '').trim();
+      if (pct && !(/^\d+$/.test(pct) && +pct >= 1 && +pct <= 100)) throw new Error('Porcentaje: un número entero de 1 a 100.');
+      var renglones = [];
+      this.porAcreditar(numero).forEach(function (l) {
+        var r = null, n, v;
+        if (c === '2') {                             // anulación: todo lo que falte
+          n = l.qty - l.ya;
+          if (l.queda) r = acreditar(l, l.queda, n && l.queda === l.precio * n ? n : 0);
+        } else if (c === '1') {                      // devolución: unidades a su precio
+          n = Number((datos.unidades || {})[l.i] || 0);
+          if (!Number.isInteger(n) || n < 0) throw new Error(l.nombre + ': escribe cuántas unidades se devuelven.');
+          if (n > l.qty - l.ya) throw new Error(l.nombre + ': quedan ' + (l.qty - l.ya) + ' unidades por devolver, no ' + n + '.');
+          if (n && l.precio * n > l.queda) {
+            throw new Error(l.nombre + ': ya tuvo rebaja y quedan ' + pesos(l.queda) + '; usa una rebaja por ese valor o la anulación.');
+          }
+          if (n) r = acreditar(l, l.precio * n, n);
+        } else if (pct) {                            // 3 a 6 con porcentaje de lo que le quede
+          v = Math.floor((l.queda * Number(pct) * 2 + 100) / 200);
+          if (v) r = acreditar(l, v, 0);
+        } else {                                     // 3 a 6 por valor
+          v = (datos.valores || {})[l.i] || 0;
+          if (isNaN(v)) throw new Error(l.nombre + ': escribe el valor en pesos.');
+          if (v) r = acreditar(l, v, 0);
+        }
+        if (r) renglones.push(r);
+      });
+      if (!renglones.length) {
+        throw new Error({ '2': 'No queda nada por acreditar en esta factura.',
+                          '1': 'Escribe cuántas unidades se devuelven de al menos un producto.' }[c]
+                        || 'Escribe el valor a acreditar de al menos un producto, o un porcentaje.');
+      }
+      var suma = function (k) { return renglones.reduce(function (s, x) { return s + x[k]; }, 0); };
+      var nota = { numero: 'NC' + (this.e.notas.length + 1), factura: f.numero, concepto: c, nombreConcepto: CONCEPTOS_NC[c],
+                   motivo: motivo, hora: hora(), lineas: renglones, base: suma('base'), impuesto: suma('impuesto'),
+                   total: suma('total'), comprador: f.comprador, estado: 'Aceptada por el simulador (ambiente de pruebas)' };
+      this.e.notas.unshift(nota);
+      this.avisar('nota_credito', nota.numero + ' corrige ' + f.numero + ' por ' + pesos(nota.total) + ' (pruebas)');
+      return nota;
     },
     // --- Informe diario («Z») ---
     informeDiario: function () {
@@ -498,5 +575,5 @@
 
   raiz.BarboxDemo = { Bar: Bar, inicial: inicial, puede: puede, pesos: pesos, cantidad: cantidad, porcentaje: porcentaje,
                       desglose: desglose, digito: digito, huella: huella, NEGOCIOS: NEGOCIOS, IMPUESTOS: IMPUESTOS,
-                      RETIROS: RETIROS, MEDIOS: MEDIOS, HITOS: HITOS, CLASES: CLASES, UVT: UVT, PROPINA: PROPINA };
+                      RETIROS: RETIROS, MEDIOS: MEDIOS, CONCEPTOS_NC: CONCEPTOS_NC, HITOS: HITOS, CLASES: CLASES, UVT: UVT, PROPINA: PROPINA };
 })(typeof window !== 'undefined' ? window : globalThis);

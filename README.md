@@ -20,7 +20,7 @@ que vende en puestos (mesas, sillas o cajas) y gasta insumos.
 | **Costos y margen** | Costo de cada receta, margen por producto y valor de la bodega por categoría. |
 | **Pago dividido** | Hasta tres formas de pago por cuenta; la caja cuadra cada medio. |
 | **Vender sin existencia** | La venta no se frena; lo que faltaba queda pendiente de compra o conteo. |
-| **Clientes y factura electrónica** | Ficha completa del cliente y factura con sus datos, lista para un proveedor tecnológico de la DIAN. |
+| **Clientes y factura electrónica** | Ficha completa del cliente y factura con sus datos, lista para un proveedor tecnológico de la DIAN. Se corrige con nota crédito (anulación, devolución, rebaja, ajuste o descuento). |
 | **Informe diario** | Uno por turno, consecutivo, con huella encadenada que delata cualquier cambio. |
 | **Tablero del dueño** | Costo de venta, ticket, fuga por conteos, ingeniería de menú y punto de equilibrio. |
 

@@ -230,7 +230,74 @@
       h('hr'), h('p.pequeno', { texto: 'CUFE: en la app lo calcula BAR BOX con la fórmula SHA-384 de la DIAN; aquí no. ' + f.estado + '.' })),
       h('section.panel', null, h('h2', { texto: 'Cómo es en la app' }),
         h('p', { texto: 'BAR BOX arma la factura (numeración de la resolución, impuestos, CUFE, XML y QR) y la entrega al proveedor tecnológico que el negocio contrate, que la firma y la manda a la DIAN. Sólo cuando la DIAN la acepta en producción dice «Factura electrónica de venta». Antes, siempre dice PRUEBAS.' })),
+      corregir(f),
       h('div.acciones', null, h('a.boton', { href: '#/clientes', texto: 'Clientes y facturas' }))];
+  }
+
+  // Una factura aceptada no se borra: se corrige con nota crédito (sólo el dueño).
+  function corregir(f) {
+    var suyas = bar.e.notas.filter(function (n) { return n.factura === f.numero; });
+    var lineas = bar.porAcreditar(f.numero), queda = lineas.some(function (l) { return l.queda > 0; });
+    var lista = suyas.length ? suyas.map(function (n) {
+      return h('div.renglon', null, h('span.txt', null, h('a', { href: '#/nota/' + n.numero, texto: n.numero }), h('small', { texto: n.nombreConcepto })),
+        h('span.val', { texto: '− ' + D.pesos(n.total) }));
+    }) : null;
+    if (!queda) return h('section.panel', null, h('h2', { texto: 'Notas crédito' }), lista, h('p.nota', { texto: 'Ya se acreditó toda la factura.' }));
+    if (!D.puede(bar.e.rol, 'notaCredito')) {
+      return h('section.panel', null, h('h2', { texto: 'Notas crédito' }), lista,
+        h('p.nota', { texto: 'Corregir una factura es sólo del dueño. Cambia de cargo arriba para probarlo.' }));
+    }
+    var concepto = h('select', { 'aria-label': 'Concepto' }, Object.keys(D.CONCEPTOS_NC).map(function (c) {
+      return h('option', { value: c, texto: D.CONCEPTOS_NC[c] });
+    }));
+    var motivo = h('input', { placeholder: 'El cliente pidió la factura a nombre de su empresa', 'aria-label': 'Motivo' });
+    var porcentaje = h('input', { inputmode: 'numeric', placeholder: 'o un % para todo (rebajas y descuentos)', 'aria-label': 'Porcentaje' });
+    var campos = lineas.map(function (l) {
+      return { l: l, u: h('input', { inputmode: 'numeric', placeholder: 'unidades', 'aria-label': 'Unidades a devolver de ' + l.nombre, disabled: l.qty <= l.ya }),
+               v: h('input', { inputmode: 'numeric', placeholder: 'valor $', 'aria-label': 'Valor a acreditar de ' + l.nombre, disabled: !l.queda }) };
+    });
+    return h('section.panel', null, h('h2', { texto: 'Corregir con nota crédito' }), lista,
+      h('p.pie', { texto: 'Anulación: todo lo que falte. Devolución parcial: unidades a su precio. Rebaja, ajuste o descuento: por valor o por porcentaje; no devuelven unidades. Nunca más de lo facturado.' }),
+      concepto, motivo,
+      campos.map(function (x) {
+        return h('div.renglon', null, h('span.txt', null, h('b', { texto: x.l.nombre }),
+          h('small', { texto: 'quedan ' + (x.l.qty - x.l.ya) + ' u · ' + D.pesos(x.l.queda) })), x.u, x.v);
+      }),
+      porcentaje,
+      h('div.acciones', null, h('button.boton', { type: 'button', texto: 'Emitir nota crédito', onclick: function () {
+        hacer(function () {
+          var unidades = {}, valores = {};
+          campos.forEach(function (x) {
+            if (x.u.value.trim()) unidades[x.l.i] = Number(x.u.value.trim());
+            if (x.v.value.trim()) valores[x.l.i] = pesosDe(x.v);
+          });
+          var n = bar.notaCredito(f.numero, { concepto: concepto.value, motivo: motivo.value, unidades: unidades,
+                                               valores: valores, porcentaje: porcentaje.value });
+          ir('/nota/' + n.numero);
+          return n;
+        }, function (n) { return n.numero + ' emitida por ' + D.pesos(n.total) + ' (pruebas).'; });
+      } })));
+  }
+
+  function nota(numero) {
+    var n = bar.e.notas.filter(function (x) { return x.numero === numero; })[0], negocio = neg();
+    if (!n) return [h('p.nota', { texto: 'Esa nota no está.' })];
+    return [h('div.demo-ticket', null,
+      h('p.demo-sello', { texto: 'PRUEBAS · SIN VALIDEZ FISCAL' }),
+      h('p', null, h('b', { texto: negocio.nombre.toUpperCase() }), h('br'), 'NIT 900.000.000-' + D.digito('900000000') + ' (ficticio)', h('br'),
+        'Nota crédito N.º ' + n.numero + ' · ' + n.hora, h('br'), 'Corrige la factura ' + n.factura),
+      h('hr'), h('p', null, h('b', { texto: n.nombreConcepto }), h('br'), n.motivo),
+      h('hr'), h('p', null, h('b', { texto: 'Adquirente' }), h('br'), n.comprador.nombre, h('br'), n.comprador.tipo + ' ' + n.comprador.doc),
+      h('hr'), n.lineas.map(function (l) {
+        return h('p.linea', null, h('span', { texto: (l.porValor ? 'Rebaja · ' : l.qty + ' × ') + l.nombre }), h('span', { texto: D.pesos(l.total) }));
+      }),
+      h('hr'), h('p.linea', null, h('span', { texto: 'Subtotal (base)' }), h('span', { texto: D.pesos(n.base) })),
+      h('p.linea', null, h('span', { texto: 'Impuestos' }), h('span', { texto: D.pesos(n.impuesto) })),
+      h('p.linea', null, h('b', { texto: 'Total acreditado' }), h('b', { texto: D.pesos(n.total) })),
+      h('hr'), h('p.pequeno', { texto: 'CUDE: en la app lo calcula BAR BOX (la fórmula del CUFE con el PIN del software); aquí no. ' + n.estado + '.' })),
+      h('section.panel', null, h('h2', { texto: 'Cómo es en la app' }),
+        h('p', { texto: 'La nota crédito referencia la factura (número, CUFE y fecha), sale en XML de la DIAN y se entrega al mismo proveedor tecnológico. No mueve caja ni inventario: si se devolvió plata, es un retiro de caja con su motivo.' })),
+      h('div.acciones', null, h('a.boton', { href: '#/factura/' + n.factura, texto: 'Ver la factura' }))];
   }
 
   function clientes() {
@@ -260,7 +327,9 @@
           }) : h('p.nota', { texto: 'Todavía ninguno.' }),
           h('h2', { texto: 'Facturas del turno' }),
           bar.e.facturas.length ? bar.e.facturas.map(function (f) {
-            return h('div.renglon', null, h('span.txt', null, h('a', { href: '#/factura/' + f.numero, texto: f.numero }), h('small', { texto: f.comprador.nombre + ' · pruebas' })),
+            var notas = bar.e.notas.filter(function (n) { return n.factura === f.numero; }).map(function (n) { return n.numero; });
+            return h('div.renglon', null, h('span.txt', null, h('a', { href: '#/factura/' + f.numero, texto: f.numero }),
+              h('small', { texto: f.comprador.nombre + ' · pruebas' + (notas.length ? ' · notas ' + notas.reverse().join(', ') : '') })),
               h('span.val', { texto: D.pesos(f.total) }));
           }) : h('p.nota', { texto: 'Se emiten desde el comprobante de una venta cobrada.' })))];
   }
@@ -455,9 +524,9 @@
   }
 
   // --- Marco -----------------------------------------------------------
-  var RUTAS = { inicio: inicio, mapa: mapa, mesa: mesa, comprobante: comprobante, factura: factura, clientes: clientes, caja: caja,
+  var RUTAS = { inicio: inicio, mapa: mapa, mesa: mesa, comprobante: comprobante, factura: factura, nota: nota, clientes: clientes, caja: caja,
                 inventario: inventario, contabilidad: contabilidad, tablero: tablero, plano: plano };
-  var PESTANA = { mesa: 'mapa', comprobante: 'mapa', factura: 'clientes' };
+  var PESTANA = { mesa: 'mapa', comprobante: 'mapa', factura: 'clientes', nota: 'clientes' };
 
   function pintar() {
     var partes = (location.hash.replace(/^#\//, '') || 'inicio').split('/');
