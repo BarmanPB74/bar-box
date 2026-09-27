@@ -98,6 +98,7 @@
     ['cancelar', 'Cancela algo con motivo (el vendedor no puede: cambia de cargo)', 'mapa'],
     ['dividir', 'Cobra con pago dividido: parte en efectivo y parte con tarjeta', 'mapa'],
     ['factura', 'Guarda un cliente y emítele su factura electrónica (modo pruebas)', 'clientes'],
+    ['comanda', 'Marca «Listo» en la comanda y avisa al mesero desde la caja', 'comanda'],
     ['conteo', 'Cuenta un producto en Inventario: la diferencia es la fuga', 'inventario'],
     ['cerrar', 'Cierra la caja contando el efectivo antes de mirar el esperado', 'caja'],
     ['z', 'Emite el informe diario del turno, con su huella encadenada', 'contabilidad'],
@@ -110,12 +111,17 @@
   var PERMISOS = {
     cancelar: ['dueño', 'bodega'], caja_cerrar: ['dueño', 'bodega'], caja_abrir: ['dueño', 'bodega'],
     plano: ['dueño', 'bodega'], contabilidad: ['dueño'], tablero: ['dueño'], costos: ['dueño', 'bodega'],
-    clientes: ['dueño', 'bodega'], facturar: ['dueño', 'bodega'], conteo: ['dueño', 'bodega'], notaCredito: ['dueño']
+    clientes: ['dueño', 'bodega'], facturar: ['dueño', 'bodega'], conteo: ['dueño', 'bodega'], notaCredito: ['dueño'],
+    avisar: ['dueño', 'bodega'], pantallas: ['dueño', 'bodega']
   };
   // Conceptos de nota crédito (anexo técnico DIAN, tabla 13.2.4). 2 y 1 por unidades; 3 a 6 por valor.
   var CONCEPTOS_NC = { '2': 'Anulación de la factura', '1': 'Devolución parcial', '3': 'Rebaja o descuento',
                        '4': 'Ajuste de precio', '5': 'Descuento comercial por pronto pago',
                        '6': 'Descuento comercial por volumen de ventas' };
+  // Comanda (como la app, esquema 29): sólo hacia adelante. «Listo» avisa a la caja; la caja avisa al mesero.
+  var ETAPAS = ['pendiente', 'en_preparacion', 'listo', 'entregado'];
+  var NOMBRES_ETAPA = { pendiente: 'Pendiente', en_preparacion: 'En preparación', listo: 'Listo', entregado: 'Salió' };
+  var ALFABETO = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   function puede(rol, que) { return (PERMISOS[que] || ['dueño']).indexOf(rol) >= 0; }
 
   function inicial(tipo) {
@@ -131,6 +137,7 @@
       mesas: d.puestos.map(function (m) { return { id: m[0], nombre: m[1], salon: m[2], gx: m[3], gy: m[4], forma: m[5] }; }),
       cuentas: {}, cobradas: [], caja: [], retirados: [], avisos: [], revisado: 0, cierre: null,
       faltantes: [], conteos: [], clientes: [], facturas: [], notas: [], informes: [], consecutivo: 990000000,
+      comandaBarra: true, pantallas: [], pantalla: null,
       gastosFijos: 600000000, semilla: 7
     };
   }
@@ -175,6 +182,7 @@
   function Bar(estado) {
     this.e = estado && estado.version === 2 ? estado : inicial(estado && estado.tipo);
     if (!this.e.notas) this.e.notas = [];              // demo guardada antes de las notas crédito
+    if (!this.e.pantallas) this.e.pantallas = [];      // …o antes de la comanda
   }
   // Renglón de nota crédito por `valor` (centavos con impuesto); qty = unidades devueltas, 0 = rebaja
   // por valor. La base se reparte por el valor acumulado, como domain.acreditar: todas las notas de
@@ -235,9 +243,10 @@
       });
       var c = this.e.cuentas[mesa] || (this.e.cuentas[mesa] = { id: this.e.siguiente++, renglones: [], pedida: false });
       c.renglones.push({ id: this.e.siguiente++, item: item.id, nombre: item.nombre, precio: item.precio, qty: 1,
-                         impuesto: item.impuesto, costo: costo, estado: item.cocina ? 'pendiente' : 'entregado', hora: hora() });
+                         impuesto: item.impuesto, costo: costo, estacion: item.cocina ? 'cocina' : 'barra',
+                         estado: item.cocina || this.e.comandaBarra ? 'pendiente' : 'entregado', hora: hora() });
       this.hito('vender');
-      this.avisar('pedido_creado', this.mesa(mesa).nombre + ': ' + item.nombre + (item.cocina ? ' → preparación' : ''));
+      this.avisar('pedido_creado', this.mesa(mesa).nombre + ': ' + item.nombre + (item.cocina ? ' → cocina' : this.e.comandaBarra ? ' → barra' : ''));
       return faltan;
     },
     retirar: function (mesa, renglonId, clase, motivo) {
@@ -254,6 +263,73 @@
                               motivo: r.motivo, autor: r.autor, hora: hora(), mesa: this.mesa(mesa).nombre });
       this.hito('cancelar');
       this.avisar('renglon_retirado', this.mesa(mesa).nombre + ': ' + r.nombre + ' · ' + RETIROS[clase]);
+    },
+    // --- Comanda ---
+    etapa: function (r) { return r.estado === 'entregado' ? 'entregado' : r.listo ? 'listo' : r.estado; },
+    renglonDe: function (mesa, id) {
+      var c = this.e.cuentas[mesa], r = c && c.renglones.filter(function (x) { return x.id === id; })[0];
+      if (!r) throw new Error('Ese pedido ya no está en la cuenta.');
+      return r;
+    },
+    // Lo que falta que salga, por mesa. estaciones: ['cocina', 'barra'] (o una).
+    comanda: function (estaciones) {
+      var self = this, grupos = [];
+      Object.keys(this.e.cuentas).forEach(function (mesa) {
+        var suyos = self.e.cuentas[mesa].renglones.filter(function (r) {
+          return !r.retiro && r.estado !== 'entregado' && estaciones.indexOf(r.estacion || 'barra') >= 0;
+        });
+        if (suyos.length) grupos.push({ mesa: mesa, nombre: self.mesa(mesa).nombre, renglones: suyos });
+      });
+      return grupos.sort(function (a, b) { return a.renglones[0].id - b.renglones[0].id; });
+    },
+    avanzar: function (mesa, id, nueva) {
+      var r = this.renglonDe(mesa, id), actual = this.etapa(r);
+      if (ETAPAS.indexOf(nueva) < 0) throw new Error('Etapa desconocida.');
+      if (r.retiro) throw new Error('Ese pedido se retiró: ya no se prepara.');
+      if (ETAPAS.indexOf(nueva) < ETAPAS.indexOf(actual)) throw new Error('Ya está «' + NOMBRES_ETAPA[actual].toLowerCase() + '»: no se devuelve.');
+      if (nueva === actual) return false;
+      if (nueva === 'listo') { r.listo = hora(); if (r.estado === 'pendiente') r.estado = 'en_preparacion'; }
+      else r.estado = nueva;
+      this.avisar('pedido_estado', this.mesa(mesa).nombre + ': ' + r.nombre + ' · ' + NOMBRES_ETAPA[nueva].toLowerCase());
+      return true;
+    },
+    listos: function () {
+      var self = this, lista = [];
+      Object.keys(this.e.cuentas).forEach(function (mesa) {
+        self.e.cuentas[mesa].renglones.forEach(function (r) {
+          if (!r.retiro && self.etapa(r) === 'listo') lista.push({ mesa: mesa, nombre: self.mesa(mesa).nombre, r: r });
+        });
+      });
+      return lista;
+    },
+    avisarMesero: function (mesa, id) {
+      this.exigir('avisar', 'Avisar al mesero lo hace la caja: el dueño o el encargado.');
+      var r = this.renglonDe(mesa, id);
+      if (this.etapa(r) !== 'listo') throw new Error('Sólo se avisa lo que está «Listo» y no ha salido.');
+      if (r.avisado) throw new Error('Ese pedido ya se avisó.');
+      r.avisado = hora();
+      this.hito('comanda');
+      this.avisar('pedido_avisado', this.mesa(mesa).nombre + ': ' + r.nombre + ' para recoger');
+    },
+    // Pantalla vinculada: código de un solo uso (en la demo no vence: todo pasa en tu navegador).
+    crearPantalla: function (nombre, estacion) {
+      this.exigir('pantallas', 'Las pantallas las crean el dueño o el encargado.');
+      nombre = String(nombre || '').trim();
+      if (!nombre) throw new Error('Ponle nombre a la pantalla.');
+      if (['cocina', 'barra', 'todas'].indexOf(estacion) < 0) throw new Error('Elige qué muestra.');
+      var codigo = '';
+      for (var i = 0; i < 8; i++) codigo += ALFABETO[this.azar(ALFABETO.length)];
+      this.e.pantallas.push({ id: this.e.siguiente++, nombre: nombre, estacion: estacion, codigo: codigo, vinculada: false });
+      if (estacion !== 'cocina') this.e.comandaBarra = true;
+      return codigo;
+    },
+    vincular: function (codigo) {
+      codigo = String(codigo || '').replace(/\s/g, '').toUpperCase();
+      var p = this.e.pantallas.filter(function (x) { return x.codigo && x.codigo === codigo; })[0];
+      if (!p) throw new Error('Ese código no sirve: ya se usó o está mal escrito.');
+      p.codigo = null; p.vinculada = true;
+      this.e.pantalla = p.id;
+      return p;
     },
     pedirCuenta: function (mesa) {
       var c = this.e.cuentas[mesa];
@@ -584,5 +660,5 @@
 
   raiz.BarboxDemo = { Bar: Bar, inicial: inicial, puede: puede, pesos: pesos, cantidad: cantidad, porcentaje: porcentaje,
                       desglose: desglose, digito: digito, huella: huella, NEGOCIOS: NEGOCIOS, IMPUESTOS: IMPUESTOS,
-                      RETIROS: RETIROS, MEDIOS: MEDIOS, CONCEPTOS_NC: CONCEPTOS_NC, HITOS: HITOS, CLASES: CLASES, UVT: UVT, PROPINA: PROPINA };
+                      RETIROS: RETIROS, MEDIOS: MEDIOS, CONCEPTOS_NC: CONCEPTOS_NC, NOMBRES_ETAPA: NOMBRES_ETAPA, HITOS: HITOS, CLASES: CLASES, UVT: UVT, PROPINA: PROPINA };
 })(typeof window !== 'undefined' ? window : globalThis);

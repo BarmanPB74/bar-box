@@ -82,10 +82,83 @@
   }
 
   // --- Puestos (mesas, sillas, cajas) --------------------------------------
+  // Lo que la caja avisó y el mesero tiene que llevar a la mesa.
+  function paraRecoger() {
+    var lista = bar.listos().filter(function (x) { return x.r.avisado; });
+    if (!lista.length) return null;
+    return h('section.panel recoger', null, h('h2', { texto: 'Para recoger (' + lista.length + ')' }),
+      lista.map(function (x) {
+        return h('div.renglon', null, h('span.txt', null, h('b', { texto: x.r.nombre }), h('small', { texto: x.nombre + ' · avisado ' + x.r.avisado })),
+          h('button.boton gold', { type: 'button', texto: 'Salió', onclick: function () {
+            hacer(function () { bar.avanzar(x.mesa, x.r.id, 'entregado'); }, x.r.nombre + ': salió.');
+          } }));
+      }));
+  }
+
+  // Tarjetas por mesa con Empezar / Listo / Salió (las usan la comanda y la tablet).
+  function tarjetas(estaciones, conPrecio) {
+    var grupos = bar.comanda(estaciones);
+    if (!grupos.length) return h('p.nota', { texto: 'No hay pedidos esperando.' });
+    return grupos.map(function (gr) {
+      return h('section.panel', null, h('h2', { texto: gr.nombre }),
+        gr.renglones.map(function (r) {
+          var et = bar.etapa(r), paso = function (nueva, texto, clase) {
+            return h('button.boton' + (clase ? ' ' + clase : ''), { type: 'button', texto: texto, onclick: function () {
+              hacer(function () { bar.avanzar(gr.mesa, r.id, nueva); }, r.nombre + ': ' + D.NOMBRES_ETAPA[nueva].toLowerCase() + '.');
+            } });
+          };
+          return h('div.renglon', null, h('span.txt', null, h('b', { texto: r.qty + ' × ' + r.nombre }),
+            h('small', { texto: (r.estacion === 'cocina' ? 'Cocina' : 'Barra') + ' · ' + D.NOMBRES_ETAPA[et] +
+              (conPrecio ? ' · ' + D.pesos(r.precio) : '') + ' · ' + r.hora + (r.avisado ? ' · mesero avisado' : '') })),
+            et === 'pendiente' && paso('en_preparacion', 'Empezar', 'suave'),
+            (et === 'pendiente' || et === 'en_preparacion') && paso('listo', 'Listo'),
+            et === 'listo' && paso('entregado', 'Salió', 'gold'));
+        }));
+    });
+  }
+
+  function comanda(filtro) {
+    var estaciones = filtro === 'cocina' || filtro === 'barra' ? [filtro] : ['cocina', 'barra'];
+    var nombre = h('input', { placeholder: 'Tablet cocina', 'aria-label': 'Nombre de la pantalla' });
+    var estacion = h('select', { 'aria-label': 'Qué muestra' }, h('option', { value: 'cocina', texto: 'Cocina' }),
+      h('option', { value: 'barra', texto: 'Barra' }), h('option', { value: 'todas', texto: 'Cocina y barra' }));
+    var codigo = h('input', { placeholder: 'ABCD2345', 'aria-label': 'Código de la tablet' });
+    var esperando = bar.e.pantallas.filter(function (p) { return p.codigo; });
+    return [hud('COMANDA', 'Cocina y barra · por mesa'),
+      h('nav.filtros', null, [['', 'Todo'], ['cocina', 'Cocina'], ['barra', 'Barra']].map(function (f) {
+        return h('a', { href: '#/comanda' + (f[0] ? '/' + f[0] : ''), texto: f[1], 'aria-current': (filtro || '') === f[0] ? 'page' : false });
+      })),
+      tarjetas(estaciones, true),
+      h('p.pie', { texto: '«Listo» aparece en Caja; la caja toca «Avisar al mesero» y al mesero le sale «Para recoger» en ' + neg().puesto.toLowerCase() + 's.' +
+        (bar.e.comandaBarra ? '' : ' La barra sirve al instante (sin comanda).') }),
+      D.puede(bar.e.rol, 'pantallas') ? h('section.panel', null, h('h2', { texto: 'Pantalla para la cocina o la barra' }),
+        h('p.pie', { texto: 'En la app: la tablet se vincula con un código de un solo uso que vence en 10 minutos; no tiene clave ni ve precios. Aquí puedes probarlo en este mismo navegador.' }),
+        nombre, estacion,
+        h('div.acciones', null, h('button.boton', { type: 'button', texto: 'Crear y dar código', onclick: function () {
+          hacer(function () { return bar.crearPantalla(nombre.value, estacion.value); }, function (c) { return 'Código: ' + c.slice(0, 4) + ' ' + c.slice(4) + ' (sirve una vez).'; });
+        } })),
+        esperando.map(function (p) { return fila(p.nombre, 'esperando el código', p.codigo.slice(0, 4) + ' ' + p.codigo.slice(4)); }),
+        esperando.length ? [codigo, h('div.acciones', null, h('button.boton suave', { type: 'button', texto: 'Vincular y abrir la tablet', onclick: function () {
+          hacer(function () { bar.vincular(codigo.value); ir('/tablet'); });
+        } }))] : null)
+        : h('p.nota', { texto: 'Las pantallas de cocina y barra las crean el dueño o el encargado. Cambia de cargo arriba para probarlo.' })];
+  }
+
+  // Lo que ve la tablet vinculada: sólo su estación, sin precios.
+  function tablet() {
+    var p = bar.e.pantallas.filter(function (x) { return x.id === bar.e.pantalla; })[0];
+    if (!p) return [h('p.nota', { texto: 'Ninguna tablet vinculada todavía: créala en Comanda.' }), h('a.boton', { href: '#/comanda', texto: 'Ir a Comanda' })];
+    return [hud(p.nombre.toUpperCase(), { cocina: 'Cocina', barra: 'Barra', todas: 'Cocina y barra' }[p.estacion] + ' · sin precios'),
+      tarjetas(p.estacion === 'todas' ? ['cocina', 'barra'] : [p.estacion], false),
+      h('p.pie', { texto: 'Así se ve en la tablet de la ' + (p.estacion === 'barra' ? 'barra' : 'cocina') + ': no es una cuenta, no abre nada más de BAR BOX.' }),
+      h('div.acciones', null, h('a.boton suave', { href: '#/comanda', texto: 'Volver a la comanda' }))];
+  }
+
   function mapa() {
     var q = bar.cuadre(), n = neg();
     return [
       hud(n.puesto.toUpperCase() + 'S', 'Vendido ' + D.pesos(q.vendido)),
+      paraRecoger(),
       !bar.e.turno.abierto && h('p.nota', null, 'La caja está cerrada: ', h('a', { href: '#/caja', texto: 'ábrela' }), ' para poder vender.'),
       bar.e.salones.map(function (s) {
         var dim = bar.dimensiones(s.id);
@@ -168,7 +241,7 @@
           var clase = h('select', { 'aria-label': 'Qué pasó' }, Object.keys(D.RETIROS).map(function (k) { return h('option', { value: k, texto: D.RETIROS[k] }); }));
           var motivo = h('input', { placeholder: 'Motivo (queda con tu nombre)', maxlength: 120, 'aria-label': 'Motivo' });
           return [h('div.renglon', null, h('span.q', { texto: String(r.qty) }),
-            h('span.txt', null, h('b', { texto: r.nombre }), h('small', { texto: D.pesos(r.precio) + ' · ' + r.hora + (r.estado === 'pendiente' ? ' · en preparación' : '') })),
+            h('span.txt', null, h('b', { texto: r.nombre }), h('small', { texto: D.pesos(r.precio) + ' · ' + r.hora + (bar.etapa(r) !== 'entregado' ? ' · ' + D.NOMBRES_ETAPA[bar.etapa(r)].toLowerCase() : '') })),
             h('span.val', { texto: D.pesos(r.precio * r.qty) })),
             puedeCancelar && h('details.perdida', null, h('summary.nota', { texto: 'Cancelar ' + r.nombre }),
               h('div.fila', null, h('div', null, clase), h('div', null, motivo)),
@@ -345,6 +418,20 @@
           }) : h('p.nota', { texto: 'Se emiten desde el comprobante de una venta cobrada.' })))];
   }
 
+  // Lo que la comanda marcó «Listo»: la caja le avisa al mesero.
+  function listosEnCaja() {
+    var lista = bar.listos();
+    if (!lista.length) return null;
+    return h('section.panel listos', null, h('h2', { texto: 'Listo para salir (' + lista.length + ')' }),
+      lista.map(function (x) {
+        return h('div.renglon', null, h('span.txt', null, h('b', { texto: x.r.qty + ' × ' + x.r.nombre }),
+          h('small', { texto: x.nombre + ' · listo ' + x.r.listo + (x.r.avisado ? ' · mesero avisado ' + x.r.avisado : '') })),
+          !x.r.avisado && D.puede(bar.e.rol, 'avisar') && h('button.boton gold', { type: 'button', texto: 'Avisar al mesero', onclick: function () {
+            hacer(function () { bar.avisarMesero(x.mesa, x.r.id); }, 'Avisado: al mesero le sale «Para recoger».');
+          } }));
+      }));
+  }
+
   function caja() {
     var q = bar.cuadre(), abierta = bar.e.turno.abierto;
     var clase = h('select', { 'aria-label': 'Qué pasó' }, h('option', { value: 'retiro', texto: 'Salió plata del cajón' }), h('option', { value: 'ingreso', texto: 'Entró plata al cajón' }));
@@ -354,6 +441,7 @@
     var base = h('input', { inputmode: 'numeric', value: '200000', 'aria-label': 'Base' });
     return [
       hud('CAJA', abierta ? 'Turno #' + bar.e.turno.numero + ' abierto' : 'Caja cerrada'),
+      listosEnCaja(),
       abierta ? h('div.dos', null,
         h('section.panel', null, h('h2', { texto: 'Movimientos de caja' }),
           h('p.pie', { texto: 'Pagar un gasto, dejar un cambio: sin esto, el cuadre miente.' }), clase, monto, motivo,
@@ -536,8 +624,9 @@
 
   // --- Marco -----------------------------------------------------------
   var RUTAS = { inicio: inicio, mapa: mapa, mesa: mesa, comprobante: comprobante, factura: factura, nota: nota, clientes: clientes, caja: caja,
+                comanda: comanda, tablet: tablet,
                 inventario: inventario, contabilidad: contabilidad, tablero: tablero, plano: plano };
-  var PESTANA = { mesa: 'mapa', comprobante: 'mapa', factura: 'clientes', nota: 'clientes' };
+  var PESTANA = { mesa: 'mapa', comprobante: 'mapa', factura: 'clientes', nota: 'clientes', tablet: 'comanda' };
 
   function pintar() {
     var partes = (location.hash.replace(/^#\//, '') || 'inicio').split('/');

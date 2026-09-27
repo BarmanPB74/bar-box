@@ -44,3 +44,8 @@
 .stats article strong{font-size:28px}
 #vista td input{max-width:7em}
 #vista td .boton{min-height:34px; padding:0 10px; margin:2px}
+/* Es un <nav>: sin la altura del menú lateral de barbox.css (como .demo-tabs). */
+.filtros{display:flex; align-items:center; gap:6px; flex-wrap:wrap; min-height:0; padding:0; background:none; margin:8px 0 12px}
+.filtros a{padding:8px 14px; border-radius:10px; background:var(--superficie-alta); color:var(--tinta); text-decoration:none; font:600 14px var(--sans)}
+.filtros a[aria-current="page"]{background:var(--oro-claro); color:var(--oro)}
+.listos,.recoger{border-left:4px solid var(--verde)}
