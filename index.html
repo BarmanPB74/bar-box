@@ -2,93 +2,435 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BAR BOX · El oficio, bajo control</title>
-<meta name="description" content="BAR BOX: ventas, caja, inventario, costos y factura para negocios pequeños que venden en puestos: bares, cafés, tiendas, barberías. Hecho desde la barra.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BAR BOX</title>
 <link rel="icon" href="demo/static/crest.svg" type="image/svg+xml">
+<meta name="description" content="Inventario, caja y facturas para bares y cafeterías.">
 <style>
-:root{--fondo:#ECEDEF;--papel:#F6F7F8;--tinta:#1F2427;--tenue:#4B535A;--oro:#8A6A1F;--linea:#D5D8DC;--acento:#1d2a26}
-@media (prefers-color-scheme:dark){:root{--fondo:#15191B;--papel:#1E2427;--tinta:#E8EAEC;--tenue:#A9B1B8;--oro:#E0C27A;--linea:#2F373B;--acento:#E0C27A}}
+:root{
+  color-scheme: light;
+  --bg:#ECEDF0;
+  --panel:#EEEFF2;
+  --ink:#1E2126;
+  --muted:#565D66;
+  --line:#D5D8DD;
+  --oro:#7A5412;
+  --oro-trazo:#7A6534;
+  --oro-suave:#BEB6A6;
+  --luz:#FFFFFF;
+  --sombra:#C8CCD3;
+  --rojo:#A3392D;
+  --verde:#3E7549;
+  --r-card:28px;
+  --r-pozo:18px;
+  --elev: -8px -8px 18px var(--luz), 10px 12px 24px var(--sombra);
+  --elev-sm: -4px -4px 10px var(--luz), 5px 6px 12px var(--sombra);
+  --hundido: inset 3px 3px 7px var(--sombra), inset -3px -3px 7px var(--luz);
+  --serif: "Noto Serif", "Source Serif 4", Georgia, "Times New Roman", serif;
+  --sans: "Nunito", "Nunito Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
 *{box-sizing:border-box}
-body{margin:0;background:var(--fondo);color:var(--tinta);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
-.envoltura{max-width:960px;margin:0 auto;padding:0 16px}
-header{padding:56px 0 32px;display:flex;gap:20px;align-items:center;flex-wrap:wrap}
-header img{width:72px;height:72px}
-h1{margin:0;font:700 clamp(34px,6vw,54px)/1.05 Georgia,"Times New Roman",serif;letter-spacing:.02em}
-.lema{margin:6px 0 0;color:var(--tenue);letter-spacing:.18em;text-transform:uppercase;font-size:13px;font-weight:600}
-.intro{font-size:19px;max-width:44em;margin:0 0 28px}
-.botones{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:48px}
-.boton{display:inline-flex;align-items:center;min-height:46px;padding:0 20px;border-radius:12px;text-decoration:none;font-weight:600;border:2px solid var(--acento)}
-.boton.lleno{background:var(--acento);color:var(--fondo)}
-.boton.borde{color:var(--tinta)}
-h2{font:700 26px Georgia,serif;margin:48px 0 16px}
-.rejilla{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
-.tarjeta{background:var(--papel);border:1px solid var(--linea);border-radius:16px;padding:18px 20px}
-.tarjeta h3{margin:0 0 6px;font-size:17px}
-.tarjeta p{margin:0;color:var(--tenue);font-size:15px}
-.tarjeta a{color:var(--oro);font-weight:600}
-ul.lista{padding-left:20px;margin:0}
-ul.lista li{margin:6px 0}
-.estado{border-left:4px solid var(--oro);padding:4px 0 4px 16px;color:var(--tenue)}
-footer{margin:64px 0 40px;padding-top:20px;border-top:1px solid var(--linea);color:var(--tenue);font-size:14px}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;padding-inline:16px;padding-block:0 48px}
+.wrap{max-width:1080px;margin-inline:auto;display:flex;flex-direction:column;gap:72px}
+h1,h2,h3{font-family:var(--serif);font-weight:400;text-wrap:balance;margin:0}
+h2{font-size:clamp(28px,6vw,40px);line-height:1.15}
+h3{font-size:24px;line-height:1.2}
+p{margin:0;max-width:62ch}
+.eyebrow{font-size:13px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.titulo-sec{display:flex;align-items:center;gap:20px;font-size:15px;letter-spacing:.34em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.titulo-sec::after{content:"";flex:1;height:2px;background:linear-gradient(90deg,var(--line),transparent)}
+.sec{display:flex;flex-direction:column;gap:24px}
+.lead{color:var(--muted);font-size:18px}
+a{color:var(--oro)}
+:focus-visible{outline:3px solid var(--oro);outline-offset:3px;border-radius:12px}
+
+/* Botones */
+.acciones{display:flex;flex-wrap:wrap;gap:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 26px;border-radius:999px;font:700 14px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;text-decoration:none;cursor:pointer;border:2px solid var(--oro);transition:transform .15s ease, box-shadow .15s ease}
+.btn-primario{background:var(--oro);color:#FBF8F1;box-shadow:var(--elev-sm)}
+.btn-secundario{background:var(--panel);color:var(--oro);box-shadow:var(--elev-sm)}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{box-shadow:var(--hundido);transform:none}
+.btn[aria-disabled="true"]{border-style:dashed;border-color:#9AA0A8;color:var(--muted);background:var(--panel);cursor:not-allowed;box-shadow:none}
+
+.panel{background:var(--panel);border-radius:var(--r-card);box-shadow:var(--elev);padding:28px}
+.pozo{width:60px;height:60px;border-radius:var(--r-pozo);display:grid;place-items:center;background:var(--panel);box-shadow:-3px -3px 8px var(--luz), 4px 5px 10px var(--sombra);color:var(--oro);font-size:26px;flex:none}
+.pozo svg{width:26px;height:26px}
+
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;border:2px solid currentColor;white-space:nowrap}
+.chip-oro{color:var(--oro)}
+.chip-gris{color:var(--muted);border-style:dashed}
+.chip-rojo{color:var(--rojo)}
+.chip-verde{color:var(--verde)}
+
+/* Hero */
+.hero{display:grid;gap:40px;padding-top:40px;align-items:center}
+.hero-texto{display:flex;flex-direction:column;gap:18px;align-items:flex-start}
+.logo{width:120px;height:auto}
+.marca{font-size:clamp(48px,13vw,84px);letter-spacing:.2em;color:var(--oro);line-height:1;margin-right:-.2em}
+.hero .lead{font-size:20px;color:var(--ink)}
+.mesas{display:flex;flex-direction:column;gap:20px}
+.mesas-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.mesas-top h3{font-size:20px;letter-spacing:.24em;text-transform:uppercase;color:var(--oro)}
+.mesas-top span{font-size:14px;color:var(--oro)}
+.grid-mesas{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.mesa{border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:10px;border:2px dashed #BFC3C9;background:var(--panel)}
+.mesa.ocupada{border:3px solid var(--oro-trazo);box-shadow:var(--elev-sm)}
+.mesa-top{display:flex;justify-content:space-between;align-items:center;font-family:var(--serif);font-size:20px}
+.mesa-top i{font-style:normal;color:var(--oro);font-size:18px}
+.mesa b{font-size:19px;font-variant-numeric:tabular-nums}
+.mesa small{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.mesa.ocupada small{color:var(--oro)}
+.nota-ej{font-size:13px;color:var(--muted)}
+
+/* Qué es */
+.dispositivos{display:flex;flex-wrap:wrap;gap:10px}
+
+/* Capacidades */
+.caps{display:grid;grid-template-columns:1fr;gap:18px}
+.cap{display:flex;gap:18px;align-items:flex-start;padding:22px}
+.cap div{display:flex;flex-direction:column;gap:4px}
+.cap p{color:var(--muted);font-size:16px}
+
+/* Puesto de mando */
+.mando{display:grid;gap:18px}
+.mando-cab{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.mando-cab h3{font-size:20px;letter-spacing:.22em;text-transform:uppercase;color:var(--oro)}
+.lista{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.fila{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:center;padding:14px 16px;border-radius:18px;box-shadow:var(--hundido)}
+.fila .chip{grid-row:span 2}
+.fila strong{font-weight:700}
+.fila span{color:var(--muted);font-size:15px}
+.u{color:var(--rojo)} .i{color:var(--oro)} .n{color:var(--muted);border-style:dashed}
+.subpaneles{display:grid;gap:18px}
+.sub{padding:22px;border-radius:22px;box-shadow:var(--hundido);display:flex;flex-direction:column;gap:14px}
+.sub h4{margin:0;font-size:13px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
+.barra{display:grid;grid-template-columns:8.5em 1fr 2.5em;gap:10px;align-items:center;font-size:15px}
+.barra .pista{height:10px;border-radius:999px;background:var(--line);overflow:hidden}
+.barra .pista i{display:block;height:100%;border-radius:999px;background:var(--oro)}
+.barra .pista i.baja{background:#9AA0A8}
+.barra em{font-style:normal;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+.tabla-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:15px;font-variant-numeric:tabular-nums}
+th{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:right;font-weight:700;padding:6px 8px;border-bottom:2px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+td{padding:9px 8px;text-align:right;border-bottom:1px solid var(--line)}
+.ok{color:var(--verde);font-weight:700}
+.falta{color:var(--rojo);font-weight:700}
+.puntos{display:grid;gap:10px;padding:0;margin:0;list-style:none}
+.puntos li{display:flex;gap:12px;align-items:baseline}
+.puntos li::before{content:"◆";color:var(--oro);font-size:12px;flex:none}
+
+/* Futuro */
+.futuro{display:grid;gap:18px}
+.fut{display:flex;flex-direction:column;gap:14px;border:2px dashed #BFC3C9;border-radius:var(--r-card);padding:26px;background:var(--panel)}
+.fut-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.estado{display:flex;flex-direction:column;gap:8px}
+.estado li{justify-content:space-between;flex-wrap:wrap}
+
+/* Planes */
+.planes{display:grid;gap:22px;align-items:start}
+.plan{display:flex;flex-direction:column;gap:18px}
+.plan.destacado{border:3px solid var(--oro-trazo)}
+.plan.anticipado{border:2px dashed #A9ADB4;box-shadow:none}
+.plan-cab{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;min-height:34px}
+.plan h3{font-size:28px}
+.precio{font-size:14px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.incluye{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:16px}
+.incluye li{display:flex;gap:12px;align-items:baseline}
+.incluye li::before{content:"◇";color:var(--oro);flex:none}
+.incluye li.mas::before{content:"◆"}
+.ampliar{border-radius:18px;box-shadow:var(--hundido);padding:14px 16px;font-size:15px;color:var(--muted)}
+.ampliar strong{color:var(--oro);letter-spacing:.14em;text-transform:uppercase;font-size:13px;display:block;margin-bottom:2px}
+.plan .btn{width:100%}
+
+/* Tienda */
+.tienda{display:grid;gap:22px}
+.tienda .btn{align-self:flex-start}
+
+/* Cierre */
+.cierre{text-align:left;display:flex;flex-direction:column;gap:18px;align-items:flex-start}
+.cierre h2{font-size:clamp(30px,7vw,46px)}
+footer{font-size:14px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between;border-top:2px solid var(--line);padding-top:20px}
+
+/* Aparición */
+.aparece.in{animation:subir .6s ease both}
+@keyframes subir{from{transform:translateY(14px)}to{transform:none}}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  .aparece.in{animation:none}
+  .btn{transition:none}
+}
+
+@media (min-width:760px){
+  body{padding-inline:32px}
+  .wrap{gap:104px}
+  .hero{grid-template-columns:1.1fr 1fr;padding-top:72px}
+  .caps{grid-template-columns:repeat(2,1fr)}
+  .subpaneles{grid-template-columns:1fr 1fr}
+  .futuro{grid-template-columns:1fr 1fr}
+  .tienda{grid-template-columns:1fr 1fr;align-items:center}
+}
+@media (min-width:1000px){
+  .caps{grid-template-columns:repeat(3,1fr)}
+  .planes{grid-template-columns:repeat(3,1fr)}
+  .mando{grid-template-columns:1.1fr 1fr}
+  .mando .subpaneles{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
-<div class="envoltura">
-<header>
-  <img src="demo/static/crest.svg" alt="">
-  <div><h1>BAR BOX</h1><p class="lema">El oficio, bajo control</p></div>
-</header>
 
-<p class="intro">Una herramienta para negocios pequeños, hecha desde la barra: ventas, caja,
-inventario, costos y factura en un solo lugar, en el teléfono o en el computador del local,
-y funciona sin internet. Nació en un bar, pero sirve igual para un café, una tienda de barrio
-o una barbería: todo negocio que vende en puestos (mesas, sillas o cajas) y gasta insumos.</p>
+<div class="wrap">
 
-<div class="botones">
-  <a class="boton lleno" href="demo/app.html">Probar un turno completo</a>
-  <a class="boton borde" href="demo/mapa.html">Ver pantallas</a>
+  <!-- 1. Hero -->
+  <header class="hero">
+    <div class="hero-texto">
+      <svg class="logo" viewBox="0 0 120 130" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="60,4 114,35 114,97 60,128 6,97 6,35" stroke="#7A6534" stroke-width="3"/>
+        <polygon points="60,16 103,41 103,91 60,116 17,91 17,41" stroke="#BEB6A6" stroke-width="3"/>
+        <path d="M44 22c-5 5 5 9 0 15M60 20c-5 5 5 9 0 15M76 22c-5 5 5 9 0 15" stroke="#7A6534" stroke-width="2.5"/>
+        <path d="M34 50h52v24c0 9-10 14-26 14s-26-5-26-14z" stroke="#7A6534" stroke-width="3"/>
+        <path d="M86 56h6c8 0 10 12 0 16h-6" stroke="#7A6534" stroke-width="3"/>
+        <path d="M60 60l7 7-7 7-7-7z" stroke="#7A6534" stroke-width="2.5"/>
+        <path d="M28 96h64" stroke="#7A6534" stroke-width="3"/>
+      </svg>
+      <p class="eyebrow">Cuaderno de campo · Guardia</p>
+      <h1 class="marca">BAR BOX</h1>
+      <p class="lead">Inventario, caja y facturas para bares y cafeterías. Todo el turno en un solo lugar.</p>
+      <div class="acciones">
+        <a class="btn btn-primario js-demo" href="demo/app.html#/inicio" target="_blank" rel="noopener">Probar la demo</a>
+        <a class="btn btn-secundario" href="#planes">Ver planes</a>
+      </div>
+    </div>
+
+    <div class="panel mesas" aria-label="Ejemplo del mapa de mesas">
+      <div class="mesas-top">
+        <h3>Mapa de mesas</h3>
+        <span>Turno #2 abierto</span>
+      </div>
+      <div class="grid-mesas">
+        <div class="mesa ocupada">
+          <div class="mesa-top">Entrada <i aria-hidden="true">◆</i></div>
+          <b>$ 48.000</b>
+          <small>Servida</small>
+        </div>
+        <div class="mesa">
+          <div class="mesa-top">Barra <i aria-hidden="true" style="color:var(--muted)">◇</i></div>
+          <b style="font-weight:400;font-size:16px;color:var(--muted)">4 puestos</b>
+          <small>Libre</small>
+        </div>
+        <div class="mesa ocupada">
+          <div class="mesa-top">Terraza <i aria-hidden="true">◆</i></div>
+          <b>$ 23.500</b>
+          <small>Pidiendo</small>
+        </div>
+        <div class="mesa">
+          <div class="mesa-top">Ventana <i aria-hidden="true" style="color:var(--muted)">◇</i></div>
+          <b style="font-weight:400;font-size:16px;color:var(--muted)">2 puestos</b>
+          <small>Libre</small>
+        </div>
+      </div>
+      <p class="nota-ej">Datos de ejemplo, como en la demo.</p>
+    </div>
+  </header>
+
+  <!-- 2. Qué es -->
+  <section class="sec aparece" aria-labelledby="t-que">
+    <p class="titulo-sec" id="t-que">Qué es</p>
+    <h2>Un libro de guardia para el negocio, pensado para el computador de la caja.</h2>
+    <p class="lead">BAR BOX reúne lo que pasa en un turno: mesas, cobros, facturas e inventario. Hoy funciona en el navegador del PC, que es donde la mayoría de bares ya trabaja. Los planes con más dispositivos llevarán el sistema también a celulares y tabletas.</p>
+    <div class="dispositivos">
+      <span class="chip chip-oro">◆ PC · hoy</span>
+      <span class="chip chip-gris">◇ Android · en planes</span>
+      <span class="chip chip-gris">◇ iOS · en planes</span>
+    </div>
+  </section>
+
+  <!-- 3. Capacidades -->
+  <section class="sec aparece" aria-labelledby="t-caps">
+    <p class="titulo-sec" id="t-caps">Capacidades</p>
+    <div class="caps">
+      <article class="panel cap"><span class="pozo" aria-hidden="true">◆</span><div><h3>Mesas</h3><p>Abre, atiende y cierra cuentas desde el mapa de tu salón.</p></div></article>
+      <article class="panel cap"><span class="pozo" aria-hidden="true">¤</span><div><h3>Caja</h3><p>Turnos con apertura y corte, y lo cobrado del día contra tu meta.</p></div></article>
+      <article class="panel cap"><span class="pozo" aria-hidden="true">▤</span><div><h3>Facturas personalizadas</h3><p>Comprobantes con el nombre y los datos de tu negocio.</p></div></article>
+      <article class="panel cap"><span class="pozo" aria-hidden="true">▦</span><div><h3>Inventario con avisos</h3><p>Existencias que se descuentan al vender y te avisan antes de acabarse.</p></div></article>
+      <article class="panel cap"><span class="pozo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="13" width="4" height="8" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg></span><div><h3>Gráficos</h3><p>Ventas por hora, por producto y por turno, fáciles de leer.</p></div></article>
+      <article class="panel cap"><span class="pozo" aria-hidden="true">◈</span><div><h3>Tablero</h3><p>El Puesto de mando: lo urgente de hoy en una sola pantalla.</p></div></article>
+    </div>
+  </section>
+
+  <!-- 4. Nunca olvides nada -->
+  <section class="sec aparece" aria-labelledby="t-mando">
+    <p class="titulo-sec" id="t-mando">Nunca olvides nada</p>
+    <h2>El Puesto de mando ordena tu inventario por prioridad.</h2>
+    <div class="mando">
+      <div class="panel" style="display:flex;flex-direction:column;gap:18px">
+        <div class="mando-cab">
+          <h3>Puesto de mando</h3>
+          <span class="nota-ej">Datos de ejemplo</span>
+        </div>
+        <ul class="lista">
+          <li class="fila"><span class="chip u">Urgente</span><strong>Ron añejo 750 ml</strong><span>Agotado · comprar hoy</span></li>
+          <li class="fila"><span class="chip u">Urgente</span><strong>Limón Tahití</strong><span>Quedan 2 kg · alcanza para el turno</span></li>
+          <li class="fila"><span class="chip i">Importante</span><strong>Café en grano</strong><span>Quedan 1,2 kg · por agotarse esta semana</span></li>
+          <li class="fila"><span class="chip n">Normal</span><strong>Servilletas</strong><span>Existencia suficiente · revisar el lunes</span></li>
+        </ul>
+      </div>
+      <div class="subpaneles">
+        <div class="sub">
+          <h4>Rotación de la semana</h4>
+          <div class="barra"><span>Cerveza lata</span><span class="pista"><i style="width:92%"></i></span><em>92</em></div>
+          <div class="barra"><span>Limonada</span><span class="pista"><i style="width:71%"></i></span><em>71</em></div>
+          <div class="barra"><span>Americano</span><span class="pista"><i style="width:58%"></i></span><em>58</em></div>
+          <div class="barra"><span>Vino rosado</span><span class="pista"><i class="baja" style="width:6%"></i></span><em>6</em></div>
+        </div>
+        <div class="sub">
+          <h4>Conteo físico contra registrado</h4>
+          <div class="tabla-wrap">
+            <table>
+              <thead><tr><th>Producto</th><th>Registrado</th><th>Físico</th><th>Estado</th></tr></thead>
+              <tbody>
+                <tr><td>Aguardiente</td><td>12</td><td>12</td><td class="ok">Correcto</td></tr>
+                <tr><td>Ginebra</td><td>6</td><td>5</td><td class="falta">Falta 1</td></tr>
+                <tr><td>Tónica</td><td>24</td><td>24</td><td class="ok">Correcto</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ul class="puntos">
+      <li><span><strong>Urgente:</strong> lo que está agotado o no alcanza para el turno.</span></li>
+      <li><span><strong>Importante:</strong> lo que se acaba pronto y conviene pedir esta semana.</span></li>
+      <li><span><strong>Normal:</strong> existencias sanas, para revisar sin afán.</span></li>
+      <li><span>Verde es un conteo que cuadra. Rojo es un faltante que debes revisar.</span></li>
+    </ul>
+  </section>
+
+  <!-- 5 y 6. Lo que viene -->
+  <section class="sec aparece" aria-labelledby="t-viene">
+    <p class="titulo-sec" id="t-viene">Lo que viene</p>
+    <div class="futuro">
+      <article class="fut">
+        <div class="fut-top"><span class="pozo" aria-hidden="true">✎</span><span class="chip chip-oro">Acceso anticipado</span></div>
+        <h3>Proveedores con IA</h3>
+        <p style="color:var(--muted)">Consultar a tus proveedores, comparar precios y recibir una recomendación de qué pedir según lo que se vende. Aún no está en la demo: se está construyendo.</p>
+      </article>
+      <article class="fut">
+        <div class="fut-top"><span class="pozo" aria-hidden="true">$</span><span class="chip chip-gris">Por partes</span></div>
+        <h3>Finanzas del negocio</h3>
+        <ul class="puntos estado">
+          <li><span>Costos, márgenes y bodega</span><span class="chip chip-verde">En la demo</span></li>
+          <li><span>Movimientos de caja por turno</span><span class="chip chip-verde">En la demo</span></li>
+          <li><span>Consejos de caja con IA</span><span class="chip chip-gris">Próximamente</span></li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <!-- 7. Planes -->
+  <section class="sec aparece" id="planes" aria-labelledby="t-planes">
+    <p class="titulo-sec" id="t-planes">Planes</p>
+    <h2>Elige cuánto sistema necesita tu negocio.</h2>
+    <div class="planes">
+      <article class="panel plan">
+        <div class="plan-cab"><h3>Esencial</h3></div>
+        <p class="precio">Precio por definir</p>
+        <ul class="incluye">
+          <li>Mapa de mesas y caja</li>
+          <li>Facturas personalizadas (no electrónicas)</li>
+          <li>Inventario y avisos</li>
+          <li>Gráficos</li>
+          <li>1 dispositivo</li>
+        </ul>
+        <div class="ampliar"><strong>Ampliar</strong>Conecta tu nube de Google para respaldo, con un plan de almacenamiento aparte.</div>
+        <a class="btn btn-secundario js-demo" href="demo/app.html#/inicio" target="_blank" rel="noopener">Probar la demo</a>
+      </article>
+      <article class="panel plan destacado">
+        <div class="plan-cab"><h3>Profesional</h3><span class="chip chip-oro">Más completo hoy</span></div>
+        <p class="precio">Precio por definir</p>
+        <ul class="incluye">
+          <li>Todo lo del plan Esencial</li>
+          <li class="mas">Facturas electrónicas</li>
+          <li class="mas">3 dispositivos</li>
+        </ul>
+        <a class="btn btn-primario js-demo" href="demo/app.html#/inicio" target="_blank" rel="noopener">Probar la demo</a>
+      </article>
+      <article class="panel plan anticipado">
+        <div class="plan-cab"><h3>Completo</h3><span class="chip chip-gris">Acceso anticipado</span></div>
+        <p class="precio">Precio por definir</p>
+        <ul class="incluye">
+          <li>Todo lo del plan Profesional</li>
+          <li class="mas">Análisis del mercado local</li>
+          <li class="mas">Promociones por fecha</li>
+          <li class="mas">Proveedores e inversionistas</li>
+          <li class="mas">Planeación de eventos</li>
+          <li class="mas">Consejos de caja</li>
+        </ul>
+        <a class="btn btn-secundario js-demo" href="demo/app.html#/inicio" target="_blank" rel="noopener">Probar la demo</a>
+      </article>
+    </div>
+  </section>
+
+  <!-- Tienda de apps -->
+  <section class="sec aparece" id="tienda" aria-labelledby="t-tienda">
+    <p class="titulo-sec" id="t-tienda">Tienda</p>
+    <div class="tienda">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <h2>BAR BOX llegará a la tienda de apps.</h2>
+        <p class="lead">Cuando se publique, podrás instalarlo desde la tienda en tu PC o celular y activar tu plan desde ahí.</p>
+      </div>
+      <div class="panel" style="display:flex;flex-direction:column;gap:16px">
+        <span class="chip chip-gris" id="tienda-estado" style="align-self:flex-start">Próximamente</span>
+        <p style="color:var(--muted)">Mientras tanto, la demo tiene el sistema completo para probar.</p>
+        <a class="btn btn-secundario" id="btn-tienda" href="#tienda" aria-disabled="true">Ver en la tienda</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Cierre -->
+  <section class="panel cierre aparece" aria-labelledby="t-cierre">
+    <p class="eyebrow">Abre el turno</p>
+    <h2 id="t-cierre">Pruébalo con un bar de mentira antes de usarlo en el tuyo.</h2>
+    <p class="lead">La demo es un turno completo en un bar inventado. Todo ocurre en tu navegador: no pide cuenta y no envía datos a ningún lado.</p>
+    <a class="btn btn-primario js-demo" href="demo/app.html#/inicio" target="_blank" rel="noopener">Probar la demo</a>
+  </section>
+
+  <footer>
+    <span>BAR BOX · Libro de Guardia</span>
+    <span>Hecho en Colombia</span>
+  </footer>
 </div>
 
-<h2>Un turno, en cualquier negocio</h2>
-<p>La demo trae cuatro negocios inventados: <strong>un bar, un café con panadería, un minimercado y una barbería</strong>.
-Elige uno y haz el turno de principio a fin en 9 pasos, o simula una hora pico y mira el tablero del dueño.</p>
-<div class="rejilla">
-  <div class="tarjeta"><h3>Mapa de mesas</h3><p>Cada mesa dice si está libre, servida o pidió la cuenta. Un toque sirve un producto y abre la cuenta. <a href="demo/mapa.html">Ver ↗</a></p></div>
-  <div class="tarjeta"><h3>Cuenta de la mesa</h3><p>La carta por categorías, lo servido y el cobro con propina sugerida voluntaria. <a href="demo/mesa.html">Ver ↗</a></p></div>
-  <div class="tarjeta"><h3>Pre-cuenta y comprobante</h3><p>Tiquetes para impresora térmica de 58/80 mm, antes y después de cobrar. <a href="demo/precuenta.html">Pre-cuenta ↗</a> · <a href="demo/comprobante.html">Comprobante ↗</a></p></div>
-  <div class="tarjeta"><h3>Caja con cuadre</h3><p>Base, ventas en efectivo, propinas y gastos: la app dice cuánto debe haber en el cajón. Se cuenta antes de mirar. <a href="demo/caja.html">Ver ↗</a></p></div>
-  <div class="tarjeta"><h3>Inventario vivo</h3><p>Cada venta descuenta su receta. Conteos, entradas y mermas quedan registrados con quién y por qué. <a href="demo/inventario.html">Ver ↗</a></p></div>
-  <div class="tarjeta"><h3>Cancelar con motivo</h3><p>Nada se borra: cada producto cancelado dice si no se sirvió, fue merma o cortesía, con quién y por qué. El mesero no cancela. <a href="demo/app.html">Probar ↗</a></p></div>
-  <div class="tarjeta"><h3>Revisión del dueño</h3><p>Al día siguiente, en un solo cuadro: el último cierre, lo cancelado y qué contar en la bodega para verificarlo. <a href="demo/app.html#/contabilidad">Probar ↗</a></p></div>
-  <div class="tarjeta"><h3>En vivo en todos los aparatos</h3><p>Lo que se comanda en un celular aparece en la caja y en la cocina al instante. Se instala como app. <a href="demo/app.html">Probar ↗</a></p></div>
-  <div class="tarjeta"><h3>Costos y margen</h3><p>Costo de cada receta, margen por producto y valor de la bodega por categoría. <a href="demo/contabilidad.html">Ver ↗</a></p></div>
-  <div class="tarjeta"><h3>Pago dividido</h3><p>Hasta tres formas de pago en una cuenta, con cambio y referencia. La caja cuadra cada medio por separado. <a href="demo/app.html#/inicio">Probar ↗</a></p></div>
-  <div class="tarjeta"><h3>Vende aunque falte inventario</h3><p>La venta nunca se frena: lo que faltaba queda pendiente hasta que llega la compra o se cuenta la bodega. <a href="demo/app.html#/inventario">Probar ↗</a></p></div>
-  <div class="tarjeta"><h3>Clientes y factura electrónica</h3><p>Ficha del cliente con dígito de verificación automático y factura con sus datos, lista para entregarla a un proveedor tecnológico de la DIAN. Para ventas pequeñas, documento POS (tiquete electrónico, hasta 5 UVT). Si hay que corregir una factura, nota crédito: anulación, devolución, rebaja o descuento, nunca por más de lo facturado. <a href="demo/app.html#/clientes">Probar ↗</a></p></div>
-  <div class="tarjeta"><h3>Informe diario que no se altera</h3><p>Un informe por turno, con número consecutivo y una huella encadenada: si alguien cambia uno, la cadena lo delata. <a href="demo/app.html#/contabilidad">Probar ↗</a></p></div>
-  <div class="tarjeta"><h3>Tablero del dueño</h3><p>Costo de venta, ticket promedio, fuga por conteos, cortesías, ingeniería de menú y punto de equilibrio. <a href="demo/app.html#/tablero">Probar ↗</a></p></div>
-</div>
+<script>
+// Pega aquí el enlace de la tienda cuando la app esté publicada.
+const STORE_URL = "";
 
-<h2>Cómo está hecho</h2>
-<ul class="lista">
-  <li><strong>Python, Flask y SQLite.</strong> Un solo programa y un archivo de datos: corre en un teléfono Android (Termux) o en un computador.</li>
-  <li><strong>Funciona sin internet.</strong> Nada de librerías externas en el navegador: la barra no se detiene si se cae la red.</li>
-  <li><strong>Más de 600 pruebas automáticas</strong> se corren antes de guardar cada cambio.</li>
-  <li><strong>Cuentas por cargo:</strong> dueño, encargado y vendedor ven y pueden hacer cosas distintas.</li>
-  <li><strong>El dinero nunca se redondea a escondidas:</strong> todo se guarda en centavos y cada movimiento deja rastro.</li>
-</ul>
+(function(){
+  const btn = document.getElementById('btn-tienda');
+  const estado = document.getElementById('tienda-estado');
+  if (STORE_URL) {
+    btn.href = STORE_URL;
+    btn.target = "_blank";
+    btn.rel = "noopener";
+    btn.removeAttribute('aria-disabled');
+    btn.className = "btn btn-primario";
+    estado.textContent = "Disponible";
+    estado.className = "chip chip-verde";
+  } else {
+    btn.addEventListener('click', e => e.preventDefault());
+  }
 
-<h2>Estado</h2>
-<p class="estado">Versión 0.8, en laboratorio y en camino a la primera prueba en un negocio real.
-La factura electrónica ya se arma completa (numeración, impuestos, CUFE, XML y QR) y se entrega a un
-proveedor tecnológico; hasta que el negocio se habilite ante la DIAN y la acepte en producción, sale marcada
-«PRUEBAS · SIN VALIDEZ FISCAL». El código fuente es privado; esta página muestra el producto con datos ficticios.</p>
-
-<footer>
-  Hecho por <strong>BarmanPB74</strong>, barman en Colombia que aprendió a programar para resolver su propio turno.<br>
-  Identidad visual propia. Los datos de la demo son inventados.
-</footer>
-</div>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduce && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+    }, { threshold: .12 });
+    document.querySelectorAll('.aparece').forEach(el => io.observe(el));
+  }
+})();
+</script>
 </body>
 </html>

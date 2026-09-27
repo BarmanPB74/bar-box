@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BAR BOX · Tarjeta</title>
+<style>
+:root{
+  --bg:#ECEDF0; --panel:#EEEFF2; --ink:#1E2126; --muted:#565D66; --line:#D5D8DD;
+  --oro:#7A5412; --oro-trazo:#7A6534; --oro-suave:#BEB6A6; --luz:#FFFFFF; --sombra:#C8CCD3;
+  --verde:#3E7549;
+  --serif:"Noto Serif","Source Serif 4",Georgia,serif;
+  --sans:"Nunito","Nunito Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --elev:-8px -8px 18px var(--luz), 10px 12px 24px var(--sombra);
+  --hundido:inset 3px 3px 7px var(--sombra), inset -3px -3px 7px var(--luz);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);display:grid;place-items:center;padding:24px 16px}
+.escena{width:min(360px,100%);aspect-ratio:5/7;perspective:1200px}
+.tarjeta{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.2,.7,.2,1);cursor:pointer;border-radius:30px}
+.tarjeta.girada{transform:rotateY(180deg)}
+.cara{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:30px;background:var(--panel);box-shadow:var(--elev);padding:32px 28px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center}
+.cara::before{content:"";position:absolute;inset:12px;border:2px solid var(--oro-suave);border-radius:22px;pointer-events:none}
+.trasera{transform:rotateY(180deg);gap:18px}
+.logo{width:110px}
+.eyebrow{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0}
+.marca{font-family:var(--serif);font-weight:400;font-size:44px;letter-spacing:.2em;margin:0 -.2em 0 0;color:var(--oro)}
+.frase{margin:0;color:var(--muted);font-size:15px;max-width:24ch;line-height:1.5}
+.pista{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--oro);margin-top:8px}
+.trasera h2{font-family:var(--serif);font-weight:400;font-size:26px;margin:0}
+.items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:15px;color:var(--muted)}
+.items li::before{content:"◆ ";color:var(--oro);font-size:11px}
+.btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:50px;border-radius:999px;font:700 13px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;text-decoration:none;cursor:pointer;border:2px solid var(--oro);position:relative;z-index:1}
+.btn-primario{background:var(--oro);color:#FBF8F1}
+.btn-secundario{background:var(--panel);color:var(--oro)}
+.btn:active{box-shadow:var(--hundido)}
+.estado{min-height:1.2em;font-size:13px;color:var(--verde);margin:0}
+:focus-visible{outline:3px solid var(--oro);outline-offset:4px}
+.tarjeta:focus-visible{outline-offset:6px}
+@media (prefers-reduced-motion: reduce){
+  .tarjeta{transition:none}
+}
+</style>
+</head>
+<body>
+<div class="escena">
+  <div class="tarjeta" id="tarjeta" role="button" tabindex="0" aria-pressed="false" aria-label="Tarjeta de BAR BOX. Pulsa para girar.">
+    <div class="cara frontal">
+      <svg class="logo" viewBox="0 0 120 130" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="60,4 114,35 114,97 60,128 6,97 6,35" stroke="#7A6534" stroke-width="3"/>
+        <polygon points="60,16 103,41 103,91 60,116 17,91 17,41" stroke="#BEB6A6" stroke-width="3"/>
+        <path d="M44 22c-5 5 5 9 0 15M60 20c-5 5 5 9 0 15M76 22c-5 5 5 9 0 15" stroke="#7A6534" stroke-width="2.5"/>
+        <path d="M34 50h52v24c0 9-10 14-26 14s-26-5-26-14z" stroke="#7A6534" stroke-width="3"/>
+        <path d="M86 56h6c8 0 10 12 0 16h-6" stroke="#7A6534" stroke-width="3"/>
+        <path d="M60 60l7 7-7 7-7-7z" stroke="#7A6534" stroke-width="2.5"/>
+        <path d="M28 96h64" stroke="#7A6534" stroke-width="3"/>
+      </svg>
+      <p class="eyebrow">Cuaderno de campo · Guardia</p>
+      <h1 class="marca">BAR BOX</h1>
+      <p class="frase">Inventario, caja y facturas para bares y cafeterías.</p>
+      <span class="pista">Toca para girar ◇</span>
+    </div>
+    <div class="cara trasera">
+      <h2>Abre un turno de prueba</h2>
+      <ul class="items">
+        <li>Mapa de mesas y caja</li>
+        <li>Inventario con avisos</li>
+        <li>Facturas personalizadas</li>
+      </ul>
+      <a class="btn btn-primario" id="btn-demo" href="demo/app.html#/inicio" target="_blank" rel="noopener">Probar la demo</a>
+      <button class="btn btn-secundario" id="btn-copiar" type="button">Copiar link</button>
+      <p class="estado" id="estado" role="status" aria-live="polite"></p>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  const URL_DEMO = "https://barmanpb74.github.io/bar-box/demo/app.html#/inicio";
+  const t = document.getElementById('tarjeta');
+  const estado = document.getElementById('estado');
+  const girar = () => {
+    const g = t.classList.toggle('girada');
+    t.setAttribute('aria-pressed', g ? 'true' : 'false');
+  };
+  t.addEventListener('click', e => { if (!e.target.closest('.btn')) girar(); });
+  t.addEventListener('keydown', e => {
+    if (e.target !== t) return;
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); girar(); }
+  });
+  function copiarRespaldo(){
+    const ta = document.createElement('textarea');
+    ta.value = URL_DEMO; ta.setAttribute('readonly','');
+    ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch(e){}
+    ta.remove(); return ok;
+  }
+  document.getElementById('btn-copiar').addEventListener('click', e => {
+    e.stopPropagation();
+    const listo = () => { estado.textContent = 'Link copiado'; setTimeout(()=>estado.textContent='', 2500); };
+    const fallo = () => { estado.textContent = copiarRespaldo() ? 'Link copiado' : 'No se pudo copiar'; };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(URL_DEMO).then(listo, fallo);
+    } else fallo();
+  });
+})();
+</script>
+</body>
+</html>
