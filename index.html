@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>BAR BOX</title>
 <link rel="icon" href="demo/static/crest.svg" type="image/svg+xml">
-<meta name="description" content="Inventario, caja y facturas para bares y cafeterías.">
+<meta name="description" content="Inventario, caja y facturas para bares y cafeterías. Pago único: se paga una vez y es tuyo.">
 <style>
 :root{
   color-scheme: light;
@@ -198,10 +198,10 @@ footer{font-size:14px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px 20p
       </svg>
       <p class="eyebrow">Cuaderno de campo · Guardia</p>
       <h1 class="marca">BAR BOX</h1>
-      <p class="lead">Inventario, caja y facturas para bares y cafeterías. Todo el turno en un solo lugar.</p>
+      <p class="lead">Inventario, caja y facturas para bares y cafeterías. Todo el turno en un solo lugar. Pagas una vez y es tuyo: sin mensualidades.</p>
       <div class="acciones">
         <a class="btn btn-primario js-demo" href="demo/app.html#/inicio" target="_blank" rel="noopener">Probar la demo</a>
-        <a class="btn btn-secundario" href="#planes">Ver planes</a>
+        <a class="btn btn-secundario" href="#planes">Ver precio</a>
       </div>
     </div>
 
@@ -333,11 +333,12 @@ footer{font-size:14px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px 20p
   <!-- 7. Planes -->
   <section class="sec aparece" id="planes" aria-labelledby="t-planes">
     <p class="titulo-sec" id="t-planes">Planes</p>
-    <h2>Elige cuánto sistema necesita tu negocio.</h2>
+    <h2>Pagas una vez. Es tuyo para siempre.</h2>
+    <p class="lead">Sin mensualidades, sin renovaciones y sin cobros automáticos. Una compra, una licencia de por vida para tu local.</p>
     <div class="planes">
       <article class="panel plan">
-        <div class="plan-cab"><h3>Plus</h3><span class="chip chip-oro">Disponible</span></div>
-        <p class="precio">$ 200.000 <small>al mes · 30 días gratis</small></p>
+        <div class="plan-cab"><h3>Plus</h3><span class="chip chip-oro">Pago único</span></div>
+        <p class="precio">$ 1.000.000 <small>una sola vez · de por vida</small></p>
         <ul class="incluye">
           <li>Mapa de mesas, caja y comanda de cocina y barra</li>
           <li>Comprobantes con tu marca (no electrónicos)</li>
@@ -345,14 +346,15 @@ footer{font-size:14px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px 20p
           <li>Contabilidad, tablero y gráficos</li>
           <li>Respaldo cifrado en tu Google Drive</li>
           <li>2 aparatos</li>
+          <li class="mas">Licencia de por vida para tu local, con sus mejoras</li>
         </ul>
-        <div class="ampliar"><strong>Cómo se activa</strong>Suscríbete con Mercado Pago: los primeros 30 días son gratis y luego se cobra solo cada mes. Cancelas cuando quieras, sin costo. En BAR BOX → «Mi plan», escribe el correo con el que te suscribiste y el plan queda activo.</div>
-        <a class="btn btn-primario" href="https://mpago.la/2BXQpuM" target="_blank" rel="noopener">Suscribirme a Plus</a>
+        <div class="ampliar"><strong>Cómo se compra</strong>Una sola vez, en Google Play (muy pronto). Mientras llega a la tienda, escríbenos con el código de tu local (en BAR BOX → «Mi plan»): te decimos cómo pagar y te enviamos tu licencia. La pegas en «Mi plan» y listo. Cada compra activa un local.</div>
+        <a class="btn btn-primario" href="mailto:barboxsistem@gmail.com?subject=Comprar%20BAR%20BOX%20Plus">Quiero comprar Plus</a>
         <a class="btn btn-secundario js-demo" href="demo/app.html#/inicio" target="_blank" rel="noopener">Probar la demo</a>
       </article>
       <article class="panel plan">
         <div class="plan-cab"><h3>Profesional</h3><span class="chip chip-gris">Próximamente</span></div>
-        <p class="precio">Precio por definir</p>
+        <p class="precio">Precio por definir <small>· pago único</small></p>
         <ul class="incluye">
           <li>Todo lo del plan Plus</li>
           <li class="mas">Facturas electrónicas</li>
@@ -362,7 +364,7 @@ footer{font-size:14px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px 20p
       </article>
       <article class="panel plan anticipado">
         <div class="plan-cab"><h3>Completo</h3><span class="chip chip-gris">Acceso anticipado</span></div>
-        <p class="precio">Precio por definir</p>
+        <p class="precio">Precio por definir <small>· pago único</small></p>
         <ul class="incluye">
           <li>Todo lo del plan Profesional</li>
           <li class="mas">Análisis del mercado local</li>
@@ -381,13 +383,13 @@ footer{font-size:14px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px 20p
     <p class="titulo-sec" id="t-tienda">Tienda</p>
     <div class="tienda">
       <div style="display:flex;flex-direction:column;gap:14px">
-        <h2>BAR BOX llegará a la tienda de apps.</h2>
-        <p class="lead">Cuando se publique, podrás instalarlo desde la tienda en tu PC o celular y activar tu plan desde ahí.</p>
+        <h2>BAR BOX llegará a Google Play.</h2>
+        <p class="lead">Cuando se publique, lo compras una sola vez en Google Play y la licencia queda en tu local para siempre.</p>
       </div>
       <div class="panel" style="display:flex;flex-direction:column;gap:16px">
         <span class="chip chip-gris" id="tienda-estado" style="align-self:flex-start">Próximamente</span>
         <p style="color:var(--muted)">Mientras tanto, la demo tiene el sistema completo para probar.</p>
-        <a class="btn btn-secundario" id="btn-tienda" href="#tienda" aria-disabled="true">Ver en la tienda</a>
+        <a class="btn btn-secundario" id="btn-tienda" href="#tienda" aria-disabled="true">Ver en Google Play</a>
       </div>
     </div>
   </section>

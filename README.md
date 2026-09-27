@@ -6,6 +6,9 @@ inventario, costos y factura** en un solo lugar, en el teléfono o en el computa
 y funciona sin internet. Sirve para bares, cafés, tiendas de barrio o barberías: todo negocio
 que vende en puestos (mesas, sillas o cajas) y gasta insumos.
 
+**Pago único:** BAR BOX Plus cuesta **$1.000.000 una sola vez** (Google Play, muy pronto) y la licencia es de por
+vida para tu local. Sin mensualidades ni cobros automáticos.
+
 **▶ [Probar un turno completo](https://barmanpb74.github.io/bar-box/demo/app.html)** en un bar, un café, un minimercado o una barbería inventados · [Presentación](https://barmanpb74.github.io/bar-box/)
 
 ## Un turno de servicio
